@@ -1,0 +1,72 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: uchiwa-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: uchiwa
+      MYSQL_ROOT_PASSWORD: root_password_change_me
+      MYSQL_USER: uchiwa_user
+      MYSQL_PASSWORD: uchiwa_password
+      MYSQL_ROOT_HOST: localhost
+    ports:
+      - "127.0.0.1:3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - uchiwa-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
+
+  app:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    container_name: uchiwa-app
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: mysql://uchiwa_user:uchiwa_password@mysql:3306/uchiwa?sslmode=disable
+      NEXTAUTH_URL: https://ohayo.site
+      NEXTAUTH_SECRET: ${NEXTAUTH_SECRET}
+      NEXT_PUBLIC_API_URL: https://ohayo.site
+    ports:
+      - "127.0.0.1:3000:3000"
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - uchiwa-network
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3000"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  nginx:
+    image: nginx:latest
+    container_name: uchiwa-nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/ssl:/etc/nginx/ssl:ro
+      - ./nginx/www:/var/www/html:ro
+    depends_on:
+      - app
+    networks:
+      - uchiwa-network
+
+volumes:
+  mysql_data:
+    driver: local
+
+networks:
+  uchiwa-network:
+    driver: bridge
