@@ -24,9 +24,9 @@ export function TabNav() {
             <Link
               key={tab.key}
               href={tab.href}
-              className={`flex-1 flex flex-col items-center justify-center py-3 md:py-0 md:px-6 md:py-4 gap-1 transition ${
+              className={`flex-1 flex flex-col items-center justify-center py-3 md:px-6 md:py-4 gap-1 transition ${
                 isActive
-                  ? 'text-pastel-pink border-b-2 md:border-b-0 md:border-b-4 border-pastel-pink'
+                  ? 'text-pastel-pink border-b-2 md:border-b-4 border-pastel-pink'
                   : 'text-gray-500 hover:text-pastel-pink'
               }`}
             >
