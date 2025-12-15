@@ -74,7 +74,7 @@ export default function AnniversariesPage() {
             <div key={anniversary.id} className="relative">
               <AnniversaryCard
                 anniversary={anniversary}
-                userTimezone={session.user?.timezone || 'Asia/Tokyo'}
+                userTimezone={(session.user as any)?.timezone || 'Asia/Tokyo'}
               />
               <button
                 onClick={() => handleDelete(anniversary.id)}
