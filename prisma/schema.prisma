@@ -19,6 +19,8 @@ model User {
   avatarUrl     String?
   bio           String?
   timezone      String     @default("Asia/Tokyo")
+  youtubeUrl    String?
+  googlePhotosUrl String?
   createdAt     DateTime   @default(now())
   updatedAt     DateTime   @updatedAt
 
