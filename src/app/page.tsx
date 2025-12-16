@@ -203,15 +203,10 @@ export default function Home() {
             Welcome
           </h1>
           <p className="text-gray-600 mb-4">
-            カードを並び替えて
+            文字を並び替えて
             <br />
             気持ちを伝えてください
           </p>
-          <div className="flex items-center justify-center gap-2 text-sm text-gray-500">
-            <Sparkles className="w-4 h-4 text-yellow-400" />
-            ドラッグまたはスワイプで移動
-            <Sparkles className="w-4 h-4 text-yellow-400" />
-          </div>
         </div>
 
         {/* カードエリア */}
@@ -248,31 +243,10 @@ export default function Home() {
           </div>
         </div>
 
-        {/* 現在の並び */}
-        <div className="text-center mb-6">
-          <div className="inline-block px-6 py-3 bg-gradient-to-r from-pastel-pink/20 to-pastel-purple/20 rounded-full">
-            <span className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-pastel-pink to-pastel-purple">
-              {cards.map((c) => c.char).join("")}
-            </span>
-          </div>
-        </div>
-
-        {/* リセットボタン */}
-        <div className="flex justify-center">
-          <button
-            onClick={shuffleCards}
-            disabled={showSuccess}
-            className="flex items-center gap-2 px-6 py-3 bg-white border-2 border-pastel-purple text-pastel-purple font-semibold rounded-full hover:bg-pastel-purple/10 transition-all transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            <RotateCcw className="w-5 h-5" />
-            もう一度シャッフル
-          </button>
-        </div>
-
         {showSuccess && (
           <div className="mt-6 text-center">
             <p className="text-lg font-semibold text-transparent bg-clip-text bg-gradient-to-r from-pastel-pink to-pastel-purple animate-pulse">
-              正解！ログイン画面に移動します...💖
+              わーい！ログイン画面に移動します...💖
             </p>
           </div>
         )}
