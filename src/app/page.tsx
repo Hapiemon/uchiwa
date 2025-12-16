@@ -37,7 +37,7 @@ export default function Home() {
   useEffect(() => {
     if (cards.length === 0) return;
     const currentOrder = cards.map((c) => c.char).join("");
-    if (currentOrder === correctAnswer.join("")) {
+    if (currentOrder === correctAnswer.join("") && !showSuccess) {
       setShowSuccess(true);
 
       // キラキラエフェクト
@@ -70,13 +70,9 @@ export default function Home() {
 
       return () => {
         clearTimeout(timer);
-        const element = document.getElementById("confetti-effect");
-        if (element && document.body.contains(element)) {
-          document.body.removeChild(element);
-        }
       };
     }
-  }, [cards, router]);
+  }, [cards, showSuccess, router]);
 
   // ドラッグ開始
   const handleDragStart = (index: number) => {
