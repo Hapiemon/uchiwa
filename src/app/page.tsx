@@ -39,40 +39,49 @@ export default function Home() {
     const currentOrder = cards.map((c) => c.char).join("");
     if (currentOrder === correctAnswer.join("") && !showSuccess) {
       setShowSuccess(true);
-
-      // キラキラエフェクト
-      const confetti = document.createElement("div");
-      confetti.className = "fixed inset-0 pointer-events-none z-50";
-      confetti.id = "confetti-effect";
-
-      // 各💖をランダムな位置に配置
-      const hearts = Array.from({ length: 30 }, (_, i) => {
-        const heart = document.createElement("div");
-        heart.className = "absolute text-4xl animate-float";
-        heart.textContent = "💖";
-        heart.style.left = `${Math.random() * 100}%`;
-        heart.style.top = "-50px";
-        heart.style.animationDelay = `${i * 0.08}s`;
-        return heart;
-      });
-
-      hearts.forEach((heart) => confetti.appendChild(heart));
-      document.body.appendChild(confetti);
-
-      // エフェクト終了後にDOM要素を削除してログイン画面へ
-      const timer = setTimeout(() => {
-        const element = document.getElementById("confetti-effect");
-        if (element) {
-          document.body.removeChild(element);
-        }
-        router.push("/login");
-      }, 2500);
-
-      return () => {
-        clearTimeout(timer);
-      };
     }
-  }, [cards, showSuccess, router]);
+  }, [cards, showSuccess]);
+
+  // 正解時の演出とリダイレクト
+  useEffect(() => {
+    if (!showSuccess) return;
+
+    // キラキラエフェクト
+    const confetti = document.createElement("div");
+    confetti.className = "fixed inset-0 pointer-events-none z-50";
+    confetti.id = "confetti-effect";
+
+    // 各💖をランダムな位置に配置
+    const hearts = Array.from({ length: 30 }, (_, i) => {
+      const heart = document.createElement("div");
+      heart.className = "absolute text-4xl animate-float";
+      heart.textContent = "💖";
+      heart.style.left = `${Math.random() * 100}%`;
+      heart.style.top = "-50px";
+      heart.style.animationDelay = `${i * 0.08}s`;
+      return heart;
+    });
+
+    hearts.forEach((heart) => confetti.appendChild(heart));
+    document.body.appendChild(confetti);
+
+    // エフェクト終了後にDOM要素を削除してログイン画面へ
+    const timer = setTimeout(() => {
+      const element = document.getElementById("confetti-effect");
+      if (element) {
+        document.body.removeChild(element);
+      }
+      router.push("/login");
+    }, 2500);
+
+    return () => {
+      clearTimeout(timer);
+      const element = document.getElementById("confetti-effect");
+      if (element && document.body.contains(element)) {
+        document.body.removeChild(element);
+      }
+    };
+  }, [showSuccess, router]);
 
   // ドラッグ開始
   const handleDragStart = (index: number) => {
