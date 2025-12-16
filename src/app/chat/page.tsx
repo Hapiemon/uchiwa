@@ -198,15 +198,15 @@ export default function ChatListPage() {
             const lastMessage = conversation.messages[0];
 
             // グループ名またはユーザー名を表示
-            let displayName = '';
+            let displayName = "";
             if (conversation.isDirect) {
               displayName = otherUser?.displayName || "Chat";
             } else {
               // グループチャットの場合、参加者名を表示
               const participantNames = conversation.participants
-                .map((p: any) => p.user?.displayName || '不明')
-                .join('/');
-              const baseTitle = conversation.title || 'グループ';
+                .map((p: any) => p.user?.displayName || "不明")
+                .join("/");
+              const baseTitle = conversation.title || "グループ";
               displayName = `${baseTitle} (${participantNames})`;
             }
 

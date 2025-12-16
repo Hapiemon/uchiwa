@@ -1,11 +1,11 @@
-'use client';
+"use client";
 
-import { useSession } from 'next-auth/react';
-import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { useToast } from '@/components/Toast';
-import Calendar from '@/components/Calendar';
-import type { DiaryEntry } from '@/types';
+import { useSession } from "next-auth/react";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { useToast } from "@/components/Toast";
+import Calendar from "@/components/Calendar";
+import type { DiaryEntry } from "@/types";
 
 export default function DiaryListPage() {
   const { data: session } = useSession();
@@ -17,11 +17,11 @@ export default function DiaryListPage() {
   useEffect(() => {
     const fetchEntries = async () => {
       try {
-        const response = await fetch('/api/diary');
+        const response = await fetch("/api/diary");
         const data = await response.json();
         setEntries(data.entries || []);
       } catch (error) {
-        showToast('読み込み失敗', 'error');
+        showToast("読み込み失敗", "error");
         setEntries([]);
       } finally {
         setLoading(false);
@@ -37,8 +37,8 @@ export default function DiaryListPage() {
     // 日記作成ページに遷移（日付をクエリパラメータで渡す）
     // ローカルタイムゾーンで日付文字列を作成
     const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
     const dateStr = `${year}-${month}-${day}`;
     router.push(`/diary/create?date=${dateStr}`);
   };
@@ -64,13 +64,13 @@ export default function DiaryListPage() {
         <div className="text-center py-8">読み込み中...</div>
       ) : (
         <Calendar
-          entries={entries.map(e => ({
+          entries={entries.map((e) => ({
             id: e.id,
             date: new Date(e.date),
             title: e.title,
             content: e.content,
             author: e.author,
-            editors: e.editors
+            editors: e.editors,
           }))}
           onDateClick={handleDateClick}
           onDateWithEntryClick={handleDateWithEntryClick}

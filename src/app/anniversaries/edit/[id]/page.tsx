@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
-import { useSession } from 'next-auth/react';
-import { useRouter, useParams } from 'next/navigation';
-import { useState, useEffect } from 'react';
-import { useToast } from '@/components/Toast';
-import type { Anniversary } from '@/types';
+import { useSession } from "next-auth/react";
+import { useRouter, useParams } from "next/navigation";
+import { useState, useEffect } from "react";
+import { useToast } from "@/components/Toast";
+import type { Anniversary } from "@/types";
 
 export default function EditAnniversaryPage() {
   const { data: session } = useSession();
@@ -15,10 +15,10 @@ export default function EditAnniversaryPage() {
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [formData, setFormData] = useState({
-    title: '',
-    date: '',
-    repeatInterval: 'YEARLY',
-    notes: '',
+    title: "",
+    date: "",
+    repeatInterval: "YEARLY",
+    notes: "",
   });
 
   useEffect(() => {
@@ -30,13 +30,13 @@ export default function EditAnniversaryPage() {
           const anniversary = data.anniversary;
           setFormData({
             title: anniversary.title,
-            date: new Date(anniversary.date).toISOString().split('T')[0],
+            date: new Date(anniversary.date).toISOString().split("T")[0],
             repeatInterval: anniversary.repeatInterval,
-            notes: anniversary.notes || '',
+            notes: anniversary.notes || "",
           });
         }
       } catch (error) {
-        showToast('読み込み失敗', 'error');
+        showToast("読み込み失敗", "error");
       } finally {
         setLoading(false);
       }
@@ -61,19 +61,19 @@ export default function EditAnniversaryPage() {
 
     try {
       const response = await fetch(`/api/anniversaries/${id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
       });
 
       if (!response.ok) {
-        throw new Error('Failed to update anniversary');
+        throw new Error("Failed to update anniversary");
       }
 
-      showToast('記念日が更新されました', 'success');
-      router.push('/anniversaries');
+      showToast("記念日が更新されました", "success");
+      router.push("/anniversaries");
     } catch (error) {
-      showToast('更新失敗', 'error');
+      showToast("更新失敗", "error");
     } finally {
       setSubmitting(false);
     }
@@ -84,7 +84,10 @@ export default function EditAnniversaryPage() {
       <h1 className="text-3xl font-bold mb-6 text-transparent bg-clip-text bg-gradient-to-r from-pastel-pink to-pastel-purple">
         記念日を編集
       </h1>
-      <form onSubmit={handleSubmit} className="bg-white rounded-lg shadow-lg p-6 space-y-4">
+      <form
+        onSubmit={handleSubmit}
+        className="bg-white rounded-lg shadow-lg p-6 space-y-4"
+      >
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
             タイトル
@@ -92,7 +95,9 @@ export default function EditAnniversaryPage() {
           <input
             type="text"
             value={formData.title}
-            onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+            onChange={(e) =>
+              setFormData({ ...formData, title: e.target.value })
+            }
             required
             className="w-full px-4 py-2 border border-pink-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-pastel-pink"
             placeholder="例: 初デート"
@@ -116,7 +121,9 @@ export default function EditAnniversaryPage() {
           </label>
           <select
             value={formData.repeatInterval}
-            onChange={(e) => setFormData({ ...formData, repeatInterval: e.target.value })}
+            onChange={(e) =>
+              setFormData({ ...formData, repeatInterval: e.target.value })
+            }
             className="w-full px-4 py-2 border border-pink-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-pastel-pink"
           >
             <option value="NONE">なし</option>
@@ -131,7 +138,9 @@ export default function EditAnniversaryPage() {
           </label>
           <textarea
             value={formData.notes}
-            onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+            onChange={(e) =>
+              setFormData({ ...formData, notes: e.target.value })
+            }
             rows={3}
             className="w-full px-4 py-2 border border-pink-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-pastel-pink resize-none"
             placeholder="メモを入力"
@@ -143,7 +152,7 @@ export default function EditAnniversaryPage() {
             disabled={submitting}
             className="flex-1 bg-gradient-to-r from-pastel-pink to-pastel-purple text-white px-6 py-3 rounded-lg hover:opacity-90 transition disabled:opacity-50"
           >
-            {submitting ? '更新中...' : '更新'}
+            {submitting ? "更新中..." : "更新"}
           </button>
           <button
             type="button"

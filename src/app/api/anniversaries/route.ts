@@ -1,20 +1,20 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/auth';
-import { anniversarySchema } from '@/lib/validation';
-import { prisma } from '@/lib/db';
+import { NextRequest, NextResponse } from "next/server";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
+import { anniversarySchema } from "@/lib/validation";
+import { prisma } from "@/lib/db";
 
-export const dynamic = 'force-dynamic';
+export const dynamic = "force-dynamic";
 
 export async function GET(req: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
     if (!session?.user?.id) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const anniversaries = await prisma.anniversary.findMany({
-      orderBy: { date: 'asc' },
+      orderBy: { date: "asc" },
       select: {
         id: true,
         title: true,
@@ -27,9 +27,9 @@ export async function GET(req: NextRequest) {
 
     return NextResponse.json({ anniversaries });
   } catch (error) {
-    console.error('Anniversaries GET error:', error);
+    console.error("Anniversaries GET error:", error);
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { error: "Internal server error" },
       { status: 500 }
     );
   }
@@ -39,7 +39,7 @@ export async function POST(req: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
     if (!session?.user?.id) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const body = await req.json();
@@ -47,7 +47,7 @@ export async function POST(req: NextRequest) {
 
     if (!parsed.success) {
       return NextResponse.json(
-        { error: 'Invalid input', details: parsed.error.errors },
+        { error: "Invalid input", details: parsed.error.errors },
         { status: 400 }
       );
     }
@@ -72,9 +72,9 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ anniversary }, { status: 201 });
   } catch (error) {
-    console.error('Anniversaries POST error:', error);
+    console.error("Anniversaries POST error:", error);
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { error: "Internal server error" },
       { status: 500 }
     );
   }

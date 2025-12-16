@@ -1,22 +1,22 @@
-'use client';
+"use client";
 
-import { useSession } from 'next-auth/react';
-import { useRouter, useSearchParams } from 'next/navigation';
-import { useState, Suspense } from 'react';
-import { useToast } from '@/components/Toast';
+import { useSession } from "next-auth/react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useState, Suspense } from "react";
+import { useToast } from "@/components/Toast";
 
 function CreateDiaryForm() {
   const { data: session } = useSession();
   const router = useRouter();
   const searchParams = useSearchParams();
   const { show: showToast } = useToast();
-  
+
   // URLから日付を取得、なければ今日の日付
-  const dateParam = searchParams.get('date');
-  const initialDate = dateParam || new Date().toISOString().split('T')[0];
-  
-  const [title, setTitle] = useState('');
-  const [content, setContent] = useState('');
+  const dateParam = searchParams.get("date");
+  const initialDate = dateParam || new Date().toISOString().split("T")[0];
+
+  const [title, setTitle] = useState("");
+  const [content, setContent] = useState("");
   const [date, setDate] = useState(initialDate);
   const [submitting, setSubmitting] = useState(false);
 
@@ -26,42 +26,42 @@ function CreateDiaryForm() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!content.trim()) {
-      showToast('内容を入力してください', 'error');
+      showToast("内容を入力してください", "error");
       return;
     }
-    
+
     setSubmitting(true);
-    
+
     try {
-      const requestBody = { 
+      const requestBody = {
         title: title.trim() || null,
         content: content.trim(),
-        date: new Date(date).toISOString()
+        date: new Date(date).toISOString(),
       };
-      
-      console.log('Creating diary with data:', requestBody);
-      
-      const response = await fetch('/api/diary', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+
+      console.log("Creating diary with data:", requestBody);
+
+      const response = await fetch("/api/diary", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(requestBody),
       });
 
       const data = await response.json();
-      console.log('Response:', { status: response.status, data });
+      console.log("Response:", { status: response.status, data });
 
       if (!response.ok) {
-        console.error('Diary creation error:', data);
-        throw new Error(data.error || 'Failed to create diary entry');
+        console.error("Diary creation error:", data);
+        throw new Error(data.error || "Failed to create diary entry");
       }
 
-      showToast('日記が作成されました', 'success');
-      router.push('/diary');
+      showToast("日記が作成されました", "success");
+      router.push("/diary");
     } catch (error) {
-      console.error('Error creating diary:', error);
-      showToast(error instanceof Error ? error.message : '作成失敗', 'error');
+      console.error("Error creating diary:", error);
+      showToast(error instanceof Error ? error.message : "作成失敗", "error");
     } finally {
       setSubmitting(false);
     }
@@ -72,10 +72,16 @@ function CreateDiaryForm() {
       <h1 className="text-3xl font-bold mb-6 text-transparent bg-clip-text bg-gradient-to-r from-pastel-pink to-pastel-purple">
         新しい日記を作成
       </h1>
-      
-      <form onSubmit={handleSubmit} className="bg-white rounded-lg shadow-lg p-6 space-y-4">
+
+      <form
+        onSubmit={handleSubmit}
+        className="bg-white rounded-lg shadow-lg p-6 space-y-4"
+      >
         <div>
-          <label htmlFor="date" className="block text-sm font-semibold text-gray-700 mb-2">
+          <label
+            htmlFor="date"
+            className="block text-sm font-semibold text-gray-700 mb-2"
+          >
             日付
           </label>
           <input
@@ -87,9 +93,12 @@ function CreateDiaryForm() {
             required
           />
         </div>
-        
+
         <div>
-          <label htmlFor="title" className="block text-sm font-semibold text-gray-700 mb-2">
+          <label
+            htmlFor="title"
+            className="block text-sm font-semibold text-gray-700 mb-2"
+          >
             タイトル（任意）
           </label>
           <input
@@ -101,9 +110,12 @@ function CreateDiaryForm() {
             className="w-full px-4 py-2 border border-pink-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-pastel-pink"
           />
         </div>
-        
+
         <div>
-          <label htmlFor="content" className="block text-sm font-semibold text-gray-700 mb-2">
+          <label
+            htmlFor="content"
+            className="block text-sm font-semibold text-gray-700 mb-2"
+          >
             内容
           </label>
           <textarea
@@ -116,14 +128,14 @@ function CreateDiaryForm() {
             required
           />
         </div>
-        
+
         <div className="flex gap-3">
           <button
             type="submit"
             disabled={submitting}
             className="flex-1 bg-pastel-pink text-white px-6 py-3 rounded-lg hover:opacity-90 transition disabled:opacity-50"
           >
-            {submitting ? '保存中...' : '保存'}
+            {submitting ? "保存中..." : "保存"}
           </button>
           <button
             type="button"

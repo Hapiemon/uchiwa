@@ -1,12 +1,12 @@
-'use client';
+"use client";
 
-import { useSession } from 'next-auth/react';
-import { useEffect, useState } from 'react';
-import Link from 'next/link';
-import { AnniversaryCard } from '@/components/AnniversaryCard';
-import { useToast } from '@/components/Toast';
-import { Trash2, Edit } from 'lucide-react';
-import type { Anniversary } from '@/types';
+import { useSession } from "next-auth/react";
+import { useEffect, useState } from "react";
+import Link from "next/link";
+import { AnniversaryCard } from "@/components/AnniversaryCard";
+import { useToast } from "@/components/Toast";
+import { Trash2, Edit } from "lucide-react";
+import type { Anniversary } from "@/types";
 
 export default function AnniversariesPage() {
   const { data: session } = useSession();
@@ -17,11 +17,11 @@ export default function AnniversariesPage() {
   useEffect(() => {
     const fetchAnniversaries = async () => {
       try {
-        const response = await fetch('/api/anniversaries');
+        const response = await fetch("/api/anniversaries");
         const data = await response.json();
         setAnniversaries(data.anniversaries || []);
       } catch (error) {
-        showToast('読み込み失敗', 'error');
+        showToast("読み込み失敗", "error");
         setAnniversaries([]);
       } finally {
         setLoading(false);
@@ -35,11 +35,11 @@ export default function AnniversariesPage() {
 
   const handleDelete = async (id: string) => {
     try {
-      await fetch(`/api/anniversaries/${id}`, { method: 'DELETE' });
+      await fetch(`/api/anniversaries/${id}`, { method: "DELETE" });
       setAnniversaries((prev) => prev.filter((a) => a.id !== id));
-      showToast('削除されました', 'success');
+      showToast("削除されました", "success");
     } catch (error) {
-      showToast('削除失敗', 'error');
+      showToast("削除失敗", "error");
     }
   };
 
@@ -73,7 +73,7 @@ export default function AnniversariesPage() {
             <div key={anniversary.id} className="relative">
               <AnniversaryCard
                 anniversary={anniversary}
-                userTimezone={(session.user as any)?.timezone || 'Asia/Tokyo'}
+                userTimezone={(session.user as any)?.timezone || "Asia/Tokyo"}
               />
               <div className="absolute top-4 right-4 flex gap-2">
                 <Link

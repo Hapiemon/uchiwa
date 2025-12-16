@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import { useSession } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
-import { useState } from 'react';
-import { useToast } from '@/components/Toast';
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { useToast } from "@/components/Toast";
 
 export default function CreateAnniversaryPage() {
   const { data: session } = useSession();
@@ -11,10 +11,10 @@ export default function CreateAnniversaryPage() {
   const { show: showToast } = useToast();
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
-    title: '',
-    date: '',
-    repeatInterval: 'YEARLY',
-    notes: '',
+    title: "",
+    date: "",
+    repeatInterval: "YEARLY",
+    notes: "",
   });
 
   if (!session) {
@@ -26,20 +26,20 @@ export default function CreateAnniversaryPage() {
     setLoading(true);
 
     try {
-      const response = await fetch('/api/anniversaries', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const response = await fetch("/api/anniversaries", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
       });
 
       if (!response.ok) {
-        throw new Error('Failed to create anniversary');
+        throw new Error("Failed to create anniversary");
       }
 
-      showToast('記念日が追加されました', 'success');
-      router.push('/anniversaries');
+      showToast("記念日が追加されました", "success");
+      router.push("/anniversaries");
     } catch (error) {
-      showToast('追加失敗', 'error');
+      showToast("追加失敗", "error");
     } finally {
       setLoading(false);
     }
@@ -50,7 +50,10 @@ export default function CreateAnniversaryPage() {
       <h1 className="text-3xl font-bold mb-6 text-transparent bg-clip-text bg-gradient-to-r from-pastel-pink to-pastel-purple">
         記念日を追加
       </h1>
-      <form onSubmit={handleSubmit} className="bg-white rounded-lg shadow-lg p-6 space-y-4">
+      <form
+        onSubmit={handleSubmit}
+        className="bg-white rounded-lg shadow-lg p-6 space-y-4"
+      >
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
             タイトル
@@ -58,7 +61,9 @@ export default function CreateAnniversaryPage() {
           <input
             type="text"
             value={formData.title}
-            onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+            onChange={(e) =>
+              setFormData({ ...formData, title: e.target.value })
+            }
             required
             className="w-full px-4 py-2 border border-pink-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-pastel-pink"
             placeholder="例: 初デート"
@@ -82,7 +87,9 @@ export default function CreateAnniversaryPage() {
           </label>
           <select
             value={formData.repeatInterval}
-            onChange={(e) => setFormData({ ...formData, repeatInterval: e.target.value })}
+            onChange={(e) =>
+              setFormData({ ...formData, repeatInterval: e.target.value })
+            }
             className="w-full px-4 py-2 border border-pink-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-pastel-pink"
           >
             <option value="NONE">なし</option>
@@ -97,7 +104,9 @@ export default function CreateAnniversaryPage() {
           </label>
           <textarea
             value={formData.notes}
-            onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+            onChange={(e) =>
+              setFormData({ ...formData, notes: e.target.value })
+            }
             className="w-full px-4 py-2 border border-pink-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-pastel-pink resize-none"
             rows={3}
             placeholder="この日についてのメモ..."
@@ -108,7 +117,7 @@ export default function CreateAnniversaryPage() {
           disabled={loading}
           className="w-full bg-gradient-to-r from-pastel-pink to-pastel-purple text-white font-semibold py-2 rounded-lg hover:opacity-90 transition disabled:opacity-50"
         >
-          {loading ? '追加中...' : '追加'}
+          {loading ? "追加中..." : "追加"}
         </button>
       </form>
     </div>
