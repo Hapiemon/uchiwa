@@ -8,7 +8,7 @@ export const dynamic = 'force-dynamic';
 
 export async function PUT(
   req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: { id: string } }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -30,9 +30,8 @@ export async function PUT(
       updateData.password = hashedPassword;
     }
 
-    const { id } = await params;
     const updatedUser = await prisma.user.update({
-      where: { id },
+      where: { id: params.id },
       data: updateData,
     });
 
@@ -48,7 +47,7 @@ export async function PUT(
 
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: { id: string } }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -56,10 +55,9 @@ export async function DELETE(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { id } = await params;
     // ユーザーを削除（カスケード削除により関連データも削除される）
     await prisma.user.delete({
-      where: { id },
+      where: { id: params.id },
     });
 
     return NextResponse.json({ success: true });

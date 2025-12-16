@@ -7,7 +7,7 @@ export const dynamic = 'force-dynamic';
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: { id: string } }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -15,9 +15,8 @@ export async function GET(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { id } = await params;
     const conversation = await prisma.conversation.findUnique({
-      where: { id },
+      where: { id: params.id },
       include: {
         participants: {
           include: {
@@ -58,7 +57,7 @@ export async function GET(
 
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: { id: string } }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -66,12 +65,10 @@ export async function DELETE(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { id: conversationId } = await params;
-
     // 会話が存在し、ユーザーが参加者であることを確認
     const conversation = await prisma.conversation.findFirst({
       where: {
-        id: conversationId,
+        id: params.id,
         participants: {
           some: {
             userId: session.user.id,
@@ -89,7 +86,7 @@ export async function DELETE(
 
     // 会話を削除（Cascadeによりメッセージと参加者も削除される）
     await prisma.conversation.delete({
-      where: { id: conversationId },
+      where: { id: params.id },
     });
 
     return NextResponse.json({ message: "削除しました" });

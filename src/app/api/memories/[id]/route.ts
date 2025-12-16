@@ -13,7 +13,7 @@ const memoryLinkSchema = z.object({
 
 export async function PUT(
   req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: { id: string } }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -30,9 +30,8 @@ export async function PUT(
 
     const { title, url } = parsed.data;
 
-    const { id } = await params;
     const memory = await prisma.memoryLink.update({
-      where: { id },
+      where: { id: params.id },
       data: { title, url },
     });
 
@@ -48,7 +47,7 @@ export async function PUT(
 
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: { id: string } }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -56,9 +55,8 @@ export async function DELETE(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { id } = await params;
     await prisma.memoryLink.delete({
-      where: { id },
+      where: { id: params.id },
     });
 
     return NextResponse.json({ message: "削除しました" });

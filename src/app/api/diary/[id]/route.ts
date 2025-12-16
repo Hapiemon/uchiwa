@@ -8,7 +8,7 @@ export const dynamic = 'force-dynamic';
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: { id: string } }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -16,9 +16,8 @@ export async function GET(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { id } = await params;
     const entry = await prisma.diaryEntry.findUnique({
-      where: { id },
+      where: { id: params.id },
       select: {
         id: true,
         authorId: true,
@@ -68,7 +67,7 @@ export async function GET(
 
 export async function PUT(
   req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: { id: string } }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -86,9 +85,8 @@ export async function PUT(
       );
     }
 
-    const { id } = await params;
     const entry = await prisma.diaryEntry.findUnique({
-      where: { id },
+      where: { id: params.id },
       select: { id: true, authorId: true },
     });
 
@@ -100,7 +98,7 @@ export async function PUT(
     const isAuthor = entry.authorId === session.user.id;
 
     const updated = await prisma.diaryEntry.update({
-      where: { id },
+      where: { id: params.id },
       data: { 
         title: parsed.data.title,
         content: parsed.data.content,
@@ -109,7 +107,7 @@ export async function PUT(
           upsert: {
             where: {
               diaryEntryId_userId: {
-                diaryEntryId: id,
+                diaryEntryId: params.id,
                 userId: session.user.id,
               },
             },
@@ -166,7 +164,7 @@ export async function PUT(
 
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: { id: string } }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -174,9 +172,8 @@ export async function DELETE(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { id } = await params;
     await prisma.diaryEntry.delete({
-      where: { id },
+      where: { id: params.id },
     });
 
     return NextResponse.json({ success: true });
