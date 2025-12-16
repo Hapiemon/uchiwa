@@ -199,7 +199,7 @@ export default function Home() {
       `}</style>
 
       <div
-        className={`bg-white/90 backdrop-blur-sm rounded-3xl shadow-2xl p-6 sm:p-8 md:p-12 max-w-md w-full ${
+        className={`bg-white/90 backdrop-blur-sm rounded-3xl shadow-2xl p-6 sm:p-8 md:p-12 max-w-2xl w-full ${
           shake ? "shake" : ""
         }`}
       >
@@ -220,9 +220,9 @@ export default function Home() {
           </p>
         </div>
 
-        {/* カードエリア - スマホ縦画面用に縦並び */}
+        {/* カードエリア - 横並び */}
         <div className="mb-6">
-          <div className="flex flex-col items-center gap-3">
+          <div className="flex flex-row flex-wrap justify-center gap-2 sm:gap-3">
             {cards.map((card, index) => (
               <div
                 key={card.id}
@@ -235,7 +235,7 @@ export default function Home() {
                 onTouchMove={handleTouchMove}
                 onTouchEnd={handleTouchEnd}
                 className={`
-                  w-full max-w-[280px] h-20 flex items-center justify-center
+                  w-14 h-14 sm:w-16 sm:h-16 md:w-20 md:h-20 flex items-center justify-center
                   bg-gradient-to-br from-white to-pink-50
                   border-4 border-pastel-pink
                   rounded-2xl shadow-lg
@@ -246,7 +246,7 @@ export default function Home() {
                   ${showSuccess ? "pulse-scale" : ""}
                 `}
               >
-                <span className="text-5xl sm:text-6xl font-bold text-transparent bg-clip-text bg-gradient-to-br from-pastel-pink to-pastel-purple">
+                <span className="text-3xl sm:text-4xl md:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-br from-pastel-pink to-pastel-purple">
                   {card.char}
                 </span>
               </div>
