@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/db';
+import bcrypt from 'bcryptjs';
 
 export async function PUT(
   req: NextRequest,
@@ -14,14 +15,22 @@ export async function PUT(
     }
 
     const body = await req.json();
-    const { name, displayName } = body;
+    const { name, displayName, password } = body;
+
+    // パスワードが提供されている場合はハッシュ化
+    const updateData: any = {
+      name,
+      displayName: displayName || null,
+    };
+
+    if (password && password.trim() !== '') {
+      const hashedPassword = await bcrypt.hash(password, 10);
+      updateData.password = hashedPassword;
+    }
 
     const updatedUser = await prisma.user.update({
       where: { id: params.id },
-      data: {
-        name,
-        displayName: displayName || null,
-      },
+      data: updateData,
     });
 
     return NextResponse.json({ user: updatedUser });

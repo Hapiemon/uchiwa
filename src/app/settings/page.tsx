@@ -280,6 +280,9 @@ export default function SettingsPage() {
                     表示名
                   </th>
                   <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                    パスワード
+                  </th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
                     作成日
                   </th>
                   <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
@@ -294,6 +297,9 @@ export default function SettingsPage() {
                     <td className="px-4 py-3 text-sm">{user.name}</td>
                     <td className="px-4 py-3 text-sm">
                       {user.displayName || "-"}
+                    </td>
+                    <td className="px-4 py-3 text-sm text-gray-400">
+                      ••••••••
                     </td>
                     <td className="px-4 py-3 text-sm text-gray-500">
                       {new Date(user.createdAt).toLocaleDateString("ja-JP")}
@@ -634,6 +640,23 @@ function EditModal({
                     setFormData({ ...formData, displayName: e.target.value })
                   }
                   className="w-full px-3 py-2 border rounded-lg"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-2">
+                  パスワード
+                  <span className="text-xs text-gray-500 ml-2">
+                    (変更する場合のみ入力)
+                  </span>
+                </label>
+                <input
+                  type="password"
+                  value={formData.password || ""}
+                  onChange={(e) =>
+                    setFormData({ ...formData, password: e.target.value })
+                  }
+                  className="w-full px-3 py-2 border rounded-lg"
+                  placeholder="新しいパスワード"
                 />
               </div>
             </>
