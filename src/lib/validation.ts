@@ -13,10 +13,9 @@ export const loginSchema = z.object({
 
 export const profileUpdateSchema = z.object({
   name: z.string().min(1, 'Name is required'),
-  displayName: z.string().optional(),
-  bio: z.string().max(500).optional(),
+  displayName: z.string().optional().or(z.literal('')),
+  bio: z.string().max(500).optional().or(z.literal('')),
   timezone: z.string(),
-  avatarUrl: z.string().url().optional().or(z.literal('')),
 });
 
 export const diaryEntrySchema = z.object({

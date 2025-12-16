@@ -60,10 +60,9 @@ export async function PUT(req: NextRequest) {
       where: { id: session.user.id },
       data: {
         name: parsed.data.name,
-        displayName: parsed.data.displayName,
-        bio: parsed.data.bio,
+        displayName: parsed.data.displayName || null,
+        bio: parsed.data.bio || null,
         timezone: parsed.data.timezone,
-        avatarUrl: parsed.data.avatarUrl || null,
       },
       select: {
         id: true,
