@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { LayoutContent } from "@/components/LayoutContent";
+import { Analytics } from "@vercel/analytics/next";
 import "@/styles/globals.css";
 
 export const metadata: Metadata = {
@@ -16,6 +17,7 @@ export default function RootLayout({
     <html lang="ja">
       <body className="bg-gradient-to-b from-pastel-lavender to-white min-h-screen">
         <LayoutContent>{children}</LayoutContent>
+        <Analytics />
       </body>
     </html>
   );
