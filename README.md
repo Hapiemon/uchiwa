@@ -73,7 +73,7 @@ npm run test:ui  # UIダッシュボード表示
 
 ### E2E テスト (Playwright)
 
-```bash
+````bash
 # 開発サーバーが起動していることを確認
 npm run test:e2e
 npm run test:e2e:ui  # ブラウザダッシュボード表示
@@ -106,7 +106,7 @@ uchiwa/
 ├── nginx/
 │   └── nginx.conf        # Nginx設定
 └── docker-compose.yml    # Docker Compose設定
-```
+````
 
 ## 🎨 UI/UX
 

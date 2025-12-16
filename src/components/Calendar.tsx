@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { useState } from 'react';
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import { useState } from "react";
 
 interface CalendarDay {
   date: Date;
@@ -10,41 +10,48 @@ interface CalendarDay {
 }
 
 interface CalendarProps {
-  entries: Array<{ 
-    id: string; 
-    date: Date; 
-    title?: string | null; 
+  entries: Array<{
+    id: string;
+    date: Date;
+    title?: string | null;
     content: string;
-    author?: { id: string; displayName?: string | null; name: string; };
-    editors?: Array<{ user: { id: string; displayName?: string | null; name: string; }; editedAt: string; }>;
+    author?: { id: string; displayName?: string | null; name: string };
+    editors?: Array<{
+      user: { id: string; displayName?: string | null; name: string };
+      editedAt: string;
+    }>;
   }>;
   onDateClick: (date: Date) => void;
   onDateWithEntryClick: (entryId: string) => void;
 }
 
-export default function Calendar({ entries, onDateClick, onDateWithEntryClick }: CalendarProps) {
+export default function Calendar({
+  entries,
+  onDateClick,
+  onDateWithEntryClick,
+}: CalendarProps) {
   const [currentDate, setCurrentDate] = useState(new Date());
 
   const getMonthDays = (date: Date): CalendarDay[] => {
     const year = date.getFullYear();
     const month = date.getMonth();
-    
+
     // 月の最初の日
     const firstDay = new Date(year, month, 1);
     const lastDay = new Date(year, month + 1, 0);
-    
+
     // カレンダーの開始日（月曜日から開始）
     const startDate = new Date(firstDay);
     const dayOfWeek = firstDay.getDay();
     const diff = dayOfWeek === 0 ? 6 : dayOfWeek - 1; // 日曜日の場合は6日前、それ以外は1日前から
     startDate.setDate(firstDay.getDate() - diff);
-    
+
     // 6週間分（42日）のカレンダーを生成
     const days: CalendarDay[] = [];
     const currentDay = new Date(startDate);
-    
+
     for (let i = 0; i < 42; i++) {
-      const entryForDay = entries.find(entry => {
+      const entryForDay = entries.find((entry) => {
         const entryDate = new Date(entry.date);
         return (
           entryDate.getFullYear() === currentDay.getFullYear() &&
@@ -52,28 +59,32 @@ export default function Calendar({ entries, onDateClick, onDateWithEntryClick }:
           entryDate.getDate() === currentDay.getDate()
         );
       });
-      
+
       days.push({
         date: new Date(currentDay),
         isCurrentMonth: currentDay.getMonth() === month,
-        hasEntry: !!entryForDay
+        hasEntry: !!entryForDay,
       });
-      
+
       currentDay.setDate(currentDay.getDate() + 1);
     }
-    
+
     return days;
   };
 
   const days = getMonthDays(currentDate);
-  const weekDays = ['月', '火', '水', '木', '金', '土', '日'];
+  const weekDays = ["月", "火", "水", "木", "金", "土", "日"];
 
   const goToPreviousMonth = () => {
-    setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() - 1));
+    setCurrentDate(
+      new Date(currentDate.getFullYear(), currentDate.getMonth() - 1)
+    );
   };
 
   const goToNextMonth = () => {
-    setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1));
+    setCurrentDate(
+      new Date(currentDate.getFullYear(), currentDate.getMonth() + 1)
+    );
   };
 
   const goToToday = () => {
@@ -81,7 +92,7 @@ export default function Calendar({ entries, onDateClick, onDateWithEntryClick }:
   };
 
   const handleDayClick = (day: CalendarDay) => {
-    const entry = entries.find(e => {
+    const entry = entries.find((e) => {
       const entryDate = new Date(e.date);
       return (
         entryDate.getFullYear() === day.date.getFullYear() &&
@@ -89,7 +100,7 @@ export default function Calendar({ entries, onDateClick, onDateWithEntryClick }:
         entryDate.getDate() === day.date.getDate()
       );
     });
-    
+
     if (entry) {
       onDateWithEntryClick(entry.id);
     } else {
@@ -153,21 +164,27 @@ export default function Calendar({ entries, onDateClick, onDateWithEntryClick }:
       <div className="grid grid-cols-7 gap-2">
         {days.map((day, index) => {
           const today = isToday(day.date);
-          
+
           return (
             <button
               key={index}
               onClick={() => handleDayClick(day)}
               className={`
                 aspect-square p-2 rounded-lg border-2 transition relative
-                ${day.isCurrentMonth ? 'bg-white' : 'bg-gray-50'}
-                ${today ? 'border-pastel-pink bg-pink-50' : 'border-transparent'}
-                ${day.hasEntry ? 'bg-pastel-mint border-pastel-mint' : ''}
-                ${!day.isCurrentMonth ? 'text-gray-400' : 'text-gray-800'}
+                ${day.isCurrentMonth ? "bg-white" : "bg-gray-50"}
+                ${
+                  today ? "border-pastel-pink bg-pink-50" : "border-transparent"
+                }
+                ${day.hasEntry ? "bg-pastel-mint border-pastel-mint" : ""}
+                ${!day.isCurrentMonth ? "text-gray-400" : "text-gray-800"}
                 hover:border-pastel-purple hover:shadow-md
               `}
             >
-              <span className={`text-sm ${today ? 'font-bold text-pastel-pink' : ''}`}>
+              <span
+                className={`text-sm ${
+                  today ? "font-bold text-pastel-pink" : ""
+                }`}
+              >
                 {day.date.getDate()}
               </span>
               {day.hasEntry && (

@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import { useSession } from 'next-auth/react';
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { useToast } from '@/components/Toast';
+import { useSession } from "next-auth/react";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { useToast } from "@/components/Toast";
 
 interface User {
   id: string;
@@ -17,19 +17,21 @@ export default function CreateChatPage() {
   const { show: showToast } = useToast();
   const [users, setUsers] = useState<User[]>([]);
   const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
-  const [title, setTitle] = useState('');
+  const [title, setTitle] = useState("");
   const [loading, setLoading] = useState(true);
   const [creating, setCreating] = useState(false);
 
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await fetch('/api/users');
+        const response = await fetch("/api/users");
         const data = await response.json();
         // 自分以外のユーザーを表示
-        setUsers(data.users?.filter((u: User) => u.id !== session?.user?.id) || []);
+        setUsers(
+          data.users?.filter((u: User) => u.id !== session?.user?.id) || []
+        );
       } catch (error) {
-        showToast('ユーザー読み込み失敗', 'error');
+        showToast("ユーザー読み込み失敗", "error");
       } finally {
         setLoading(false);
       }
@@ -50,21 +52,21 @@ export default function CreateChatPage() {
 
   const handleCreate = async () => {
     if (selectedUsers.length === 0) {
-      showToast('ユーザーを選択してください', 'error');
+      showToast("ユーザーを選択してください", "error");
       return;
     }
 
     const isDirect = selectedUsers.length === 1;
     if (!isDirect && !title.trim()) {
-      showToast('グループ名を入力してください', 'error');
+      showToast("グループ名を入力してください", "error");
       return;
     }
 
     setCreating(true);
     try {
-      const response = await fetch('/api/chat/conversations', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const response = await fetch("/api/chat/conversations", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           userIds: selectedUsers,
           title: isDirect ? null : title.trim(),
@@ -74,13 +76,13 @@ export default function CreateChatPage() {
 
       const data = await response.json();
       if (response.ok) {
-        showToast('チャット作成成功', 'success');
+        showToast("チャット作成成功", "success");
         router.push(`/chat/${data.conversation.id}`);
       } else {
-        showToast(data.error || 'チャット作成失敗', 'error');
+        showToast(data.error || "チャット作成失敗", "error");
       }
     } catch (error) {
-      showToast('チャット作成失敗', 'error');
+      showToast("チャット作成失敗", "error");
     } finally {
       setCreating(false);
     }
@@ -129,8 +131,8 @@ export default function CreateChatPage() {
                 key={user.id}
                 className={`flex items-center gap-3 p-4 border rounded-lg cursor-pointer transition ${
                   selectedUsers.includes(user.id)
-                    ? 'border-pastel-pink bg-pink-50'
-                    : 'border-gray-200 hover:border-pastel-pink'
+                    ? "border-pastel-pink bg-pink-50"
+                    : "border-gray-200 hover:border-pastel-pink"
                 }`}
               >
                 <input
@@ -142,7 +144,7 @@ export default function CreateChatPage() {
                 {user.avatarUrl && (
                   <img
                     src={user.avatarUrl}
-                    alt={user.displayName || ''}
+                    alt={user.displayName || ""}
                     className="w-10 h-10 rounded-full"
                   />
                 )}
@@ -165,7 +167,7 @@ export default function CreateChatPage() {
           disabled={creating || selectedUsers.length === 0}
           className="flex-1 bg-pastel-pink text-white px-4 py-2 rounded-lg hover:opacity-90 transition disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          {creating ? '作成中...' : '作成'}
+          {creating ? "作成中..." : "作成"}
         </button>
       </div>
     </div>

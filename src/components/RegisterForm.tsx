@@ -1,14 +1,14 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { useToast } from '@/components/Toast';
-import { Mail, Lock, User } from 'lucide-react';
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useToast } from "@/components/Toast";
+import { Mail, Lock, User } from "lucide-react";
 
 export function RegisterForm() {
-  const [email, setEmail] = useState('');
-  const [name, setName] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState("");
+  const [name, setName] = useState("");
+  const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const router = useRouter();
   const { show: showToast } = useToast();
@@ -18,22 +18,22 @@ export function RegisterForm() {
     setLoading(true);
 
     try {
-      const response = await fetch('/api/auth/register', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const response = await fetch("/api/auth/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, name, password }),
       });
 
       if (!response.ok) {
         const error = await response.json();
-        showToast(error.error || '登録失敗', 'error');
+        showToast(error.error || "登録失敗", "error");
         return;
       }
 
-      showToast('登録成功! ログインしてください', 'success');
-      router.push('/login');
+      showToast("登録成功! ログインしてください", "success");
+      router.push("/login");
     } catch (error) {
-      showToast('エラーが発生しました', 'error');
+      showToast("エラーが発生しました", "error");
     } finally {
       setLoading(false);
     }
@@ -96,7 +96,7 @@ export function RegisterForm() {
         disabled={loading}
         className="w-full bg-gradient-to-r from-pastel-pink to-pastel-purple text-white font-semibold py-2 rounded-lg hover:opacity-90 transition disabled:opacity-50"
       >
-        {loading ? '登録中...' : '登録'}
+        {loading ? "登録中..." : "登録"}
       </button>
     </form>
   );

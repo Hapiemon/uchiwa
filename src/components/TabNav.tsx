@@ -1,17 +1,22 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import { BookText, Calendar, MessageCircle, Heart } from 'lucide-react';
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { BookText, Calendar, MessageCircle, Heart } from "lucide-react";
 
 export function TabNav() {
   const pathname = usePathname();
 
   const tabs = [
-    { href: '/diary', icon: BookText, label: '日記', key: 'diary' },
-    { href: '/anniversaries', icon: Calendar, label: '記念日', key: 'anniversaries' },
-    { href: '/chat', icon: MessageCircle, label: 'チャット', key: 'chat' },
-    { href: '/memories', icon: Heart, label: '思い出', key: 'memories' },
+    { href: "/diary", icon: BookText, label: "日記", key: "diary" },
+    {
+      href: "/anniversaries",
+      icon: Calendar,
+      label: "記念日",
+      key: "anniversaries",
+    },
+    { href: "/chat", icon: MessageCircle, label: "チャット", key: "chat" },
+    { href: "/memories", icon: Heart, label: "思い出", key: "memories" },
   ];
 
   return (
@@ -26,8 +31,8 @@ export function TabNav() {
               href={tab.href}
               className={`flex-1 flex flex-col items-center justify-center py-3 gap-1 transition ${
                 isActive
-                  ? 'text-pastel-pink border-b-2 border-pastel-pink'
-                  : 'text-gray-500 hover:text-pastel-pink'
+                  ? "text-pastel-pink border-b-2 border-pastel-pink"
+                  : "text-gray-500 hover:text-pastel-pink"
               }`}
             >
               <Icon className="w-5 h-5" />

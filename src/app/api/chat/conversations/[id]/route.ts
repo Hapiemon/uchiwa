@@ -1,7 +1,7 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/auth';
-import { prisma } from '@/lib/db';
+import { NextRequest, NextResponse } from "next/server";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
+import { prisma } from "@/lib/db";
 
 export async function GET(
   req: NextRequest,
@@ -10,7 +10,7 @@ export async function GET(
   try {
     const session = await getServerSession(authOptions);
     if (!session?.user?.id) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const conversation = await prisma.conversation.findUnique({
@@ -31,7 +31,7 @@ export async function GET(
     });
 
     if (!conversation) {
-      return NextResponse.json({ error: 'Not found' }, { status: 404 });
+      return NextResponse.json({ error: "Not found" }, { status: 404 });
     }
 
     // 参加者チェック
@@ -40,14 +40,14 @@ export async function GET(
     );
 
     if (!isParticipant) {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
     return NextResponse.json({ conversation });
   } catch (error) {
-    console.error('Conversation GET error:', error);
+    console.error("Conversation GET error:", error);
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { error: "Internal server error" },
       { status: 500 }
     );
   }
@@ -60,7 +60,7 @@ export async function DELETE(
   try {
     const session = await getServerSession(authOptions);
     if (!session?.user?.id) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const conversationId = params.id;
@@ -79,7 +79,7 @@ export async function DELETE(
 
     if (!conversation) {
       return NextResponse.json(
-        { error: '会話が見つかりません' },
+        { error: "会話が見つかりません" },
         { status: 404 }
       );
     }
@@ -89,11 +89,11 @@ export async function DELETE(
       where: { id: conversationId },
     });
 
-    return NextResponse.json({ message: '削除しました' });
+    return NextResponse.json({ message: "削除しました" });
   } catch (error) {
-    console.error('Conversation DELETE error:', error);
+    console.error("Conversation DELETE error:", error);
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { error: "Internal server error" },
       { status: 500 }
     );
   }

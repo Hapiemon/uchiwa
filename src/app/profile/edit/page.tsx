@@ -39,10 +39,10 @@ export default function EditProfilePage() {
       }
     };
 
-    if (session) {
+    if (session && loading) {
       fetchProfile();
     }
-  }, [session, showToast]);
+  }, [session, loading]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

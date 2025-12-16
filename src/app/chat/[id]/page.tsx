@@ -132,7 +132,7 @@ export default function ChatRoomPage() {
       {/* ヘッダー */}
       <div className="bg-white border-b border-gray-200 px-4 py-3 flex items-center gap-3 flex-shrink-0">
         <button
-          onClick={() => router.push('/chat')}
+          onClick={() => router.push("/chat")}
           className="text-gray-600 hover:text-gray-800"
         >
           <ArrowLeft className="w-6 h-6" />

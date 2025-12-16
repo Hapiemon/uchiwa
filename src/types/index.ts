@@ -1,4 +1,4 @@
-import type { User as PrismaUser } from '@prisma/client';
+import type { User as PrismaUser } from "@prisma/client";
 
 export type User = PrismaUser;
 
@@ -49,7 +49,7 @@ export interface Anniversary {
   userId: string;
   title: string;
   date: Date;
-  repeatInterval: 'NONE' | 'WEEKLY' | 'MONTHLY' | 'YEARLY';
+  repeatInterval: "NONE" | "WEEKLY" | "MONTHLY" | "YEARLY";
   notes?: string | null;
   createdAt: Date;
 }

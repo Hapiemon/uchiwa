@@ -27,9 +27,12 @@ export default function DiaryDetailPage() {
         if (!response.ok) throw new Error('Not found');
         const data = await response.json();
         setEntry(data.entry);
-        setTitle(data.entry.title || '');
-        setContent(data.entry.content);
-        setDate(new Date(data.entry.date).toISOString().split('T')[0]);
+        // 編集中でない場合のみフォームの値を更新
+        if (!isEditing) {
+          setTitle(data.entry.title || '');
+          setContent(data.entry.content);
+          setDate(new Date(data.entry.date).toISOString().split('T')[0]);
+        }
       } catch (error) {
         showToast('読み込み失敗', 'error');
       } finally {
@@ -37,10 +40,10 @@ export default function DiaryDetailPage() {
       }
     };
 
-    if (session) {
+    if (session && !isEditing) {
       fetchEntry();
     }
-  }, [session, id, showToast]);
+  }, [session, id, isEditing]);
 
   const handleUpdate = async (e: React.FormEvent) => {
     e.preventDefault();

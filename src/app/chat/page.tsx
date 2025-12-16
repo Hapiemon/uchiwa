@@ -81,7 +81,8 @@ export default function ChatListPage() {
     } else if (diff < 0 && swipedId === conversationId) {
       // 右スワイプ（削除ボタンを閉じる）
       const resetDiff = Math.max(diff, -maxTranslate);
-      const percentage = ((-maxTranslate + Math.abs(resetDiff)) / parentWidth) * 100;
+      const percentage =
+        ((-maxTranslate + Math.abs(resetDiff)) / parentWidth) * 100;
       element.style.transform = `translateX(-${percentage}%)`;
       element.style.transition = "none";
     }
@@ -97,7 +98,10 @@ export default function ChatListPage() {
     if (currentXRef.current > threshold) {
       element.style.transform = "translateX(-30%)";
       setSwipedId(conversationId);
-    } else if (currentXRef.current < -(threshold * 0.5) && swipedId === conversationId) {
+    } else if (
+      currentXRef.current < -(threshold * 0.5) &&
+      swipedId === conversationId
+    ) {
       // 右スワイプで閉じる
       element.style.transform = "translateX(0)";
       setSwipedId(null);
@@ -128,7 +132,8 @@ export default function ChatListPage() {
         element.style.transition = "none";
       } else if (diff < 0 && swipedId === conversationId) {
         const resetDiff = Math.max(diff, -maxTranslate);
-        const percentage = ((-maxTranslate + Math.abs(resetDiff)) / parentWidth) * 100;
+        const percentage =
+          ((-maxTranslate + Math.abs(resetDiff)) / parentWidth) * 100;
         element.style.transform = `translateX(-${percentage}%)`;
         element.style.transition = "none";
       }
@@ -141,7 +146,10 @@ export default function ChatListPage() {
       if (currentXRef.current > threshold) {
         element.style.transform = "translateX(-30%)";
         setSwipedId(conversationId);
-      } else if (currentXRef.current < -(threshold * 0.5) && swipedId === conversationId) {
+      } else if (
+        currentXRef.current < -(threshold * 0.5) &&
+        swipedId === conversationId
+      ) {
         element.style.transform = "translateX(0)";
         setSwipedId(null);
       } else if (swipedId !== conversationId) {

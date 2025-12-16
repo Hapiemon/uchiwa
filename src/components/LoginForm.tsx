@@ -1,14 +1,14 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { signIn } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
-import { useToast } from '@/components/Toast';
-import { Mail, Lock } from 'lucide-react';
+import { useState } from "react";
+import { signIn } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import { useToast } from "@/components/Toast";
+import { Mail, Lock } from "lucide-react";
 
 export function LoginForm() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const router = useRouter();
   const { show: showToast } = useToast();
@@ -18,20 +18,20 @@ export function LoginForm() {
     setLoading(true);
 
     try {
-      const result = await signIn('credentials', {
+      const result = await signIn("credentials", {
         email,
         password,
         redirect: false,
       });
 
       if (result?.error) {
-        showToast('ログイン失敗: ' + result.error, 'error');
+        showToast("ログイン失敗: " + result.error, "error");
       } else {
-        showToast('ログイン成功しました!', 'success');
-        router.push('/diary');
+        showToast("ログイン成功しました!", "success");
+        router.push("/diary");
       }
     } catch (error) {
-      showToast('エラーが発生しました', 'error');
+      showToast("エラーが発生しました", "error");
     } finally {
       setLoading(false);
     }
@@ -76,7 +76,7 @@ export function LoginForm() {
         disabled={loading}
         className="w-full bg-gradient-to-r from-pastel-pink to-pastel-purple text-white font-semibold py-2 rounded-lg hover:opacity-90 transition disabled:opacity-50"
       >
-        {loading ? 'ログイン中...' : 'ログイン'}
+        {loading ? "ログイン中..." : "ログイン"}
       </button>
     </form>
   );
