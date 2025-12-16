@@ -70,14 +70,14 @@ export default function Home() {
     document.body.appendChild(confetti);
     console.log('💖 ハート要素を追加しました');
 
-    // エフェクト終了後にDOM要素を削除してログイン画面へ
+    // エフェクト終了後にDOM要素を削除して日記画面へ
     const timer = setTimeout(() => {
-      console.log('⏱️ 2.5秒経過、ログイン画面に移動します');
+      console.log('⏱️ 2.5秒経過、日記画面に移動します');
       const element = document.getElementById("confetti-effect");
       if (element) {
         document.body.removeChild(element);
       }
-      router.push("/login");
+      router.push("/diary");
     }, 2500);
 
     return () => {
