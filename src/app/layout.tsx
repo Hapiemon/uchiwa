@@ -3,8 +3,8 @@ import { LayoutContent } from "@/components/LayoutContent";
 import "@/styles/globals.css";
 
 export const metadata: Metadata = {
-  title: "Uchiwa - かわいいカップル向けWebアプリ",
-  description: "あなたとの思い出を共有するアプリ",
+  title: "3周年記念サイト",
+  description: "思い出を大切にするために作った！",
 };
 
 export default function RootLayout({
