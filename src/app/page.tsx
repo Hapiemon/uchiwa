@@ -222,7 +222,7 @@ export default function Home() {
 
         {/* カードエリア - 横並び */}
         <div className="mb-6">
-          <div className="flex flex-row flex-wrap justify-center gap-2 sm:gap-3">
+          <div className="flex flex-row flex-wrap justify-center sm:gap-3">
             {cards.map((card, index) => (
               <div
                 key={card.id}
