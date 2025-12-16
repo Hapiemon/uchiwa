@@ -119,10 +119,18 @@ export default function ChatRoomPage() {
   }
 
   // チャット名を決定
-  const chatTitle = conversation.isDirect
-    ? conversation.participants.find((p) => p.user.id !== session.user?.id)
-        ?.user.displayName || "Chat"
-    : conversation.title || `グループ (${conversation.participants.length}人)`;
+  let chatTitle = '';
+  if (conversation.isDirect) {
+    chatTitle = conversation.participants.find((p) => p.user.id !== session.user?.id)
+      ?.user.displayName || "Chat";
+  } else {
+    // グループチャットの場合、参加者名を表示
+    const participantNames = conversation.participants
+      .map((p) => p.user.displayName || p.user.name || '不明')
+      .join('/');
+    const baseTitle = conversation.title || 'グループ';
+    chatTitle = `${baseTitle} (${participantNames})`;
+  }
 
   return (
     <div
