@@ -186,7 +186,7 @@ export default function ChatRoomPage() {
 
                   {/* メッセージ吹き出し */}
                   <div className="flex flex-col">
-                    {!isMe && !conversation.isDirect && (
+                    {!isMe && (
                       <span className="text-xs text-gray-600 mb-1 px-2">
                         {message.sender.displayName}
                       </span>
