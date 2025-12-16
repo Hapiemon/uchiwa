@@ -91,11 +91,9 @@ export default function SettingsPage() {
   };
 
   useEffect(() => {
-    if (session) {
-      fetchData();
-    }
+    fetchData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [session]);
+  }, []);
 
   const openAddModal = () => {
     setModalMode("add");
@@ -198,12 +196,8 @@ export default function SettingsPage() {
     }
   };
 
-  if (!session) {
-    return <div className="text-center py-8">ログインしてください</div>;
-  }
-
   return (
-    <div className="max-w-7xl mx-auto px-4">
+    <div className="max-w-7xl mx-auto px-4 py-8">
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">
           <Database className="w-8 h-8 text-pastel-purple" />

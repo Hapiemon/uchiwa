@@ -37,7 +37,9 @@ export default function Home() {
   useEffect(() => {
     if (cards.length === 0) return;
     const currentOrder = cards.map((c) => c.char).join("");
+    console.log('Current order:', currentOrder, 'Show success:', showSuccess);
     if (currentOrder === correctAnswer.join("") && !showSuccess) {
+      console.log('🎉 正解！演出を開始します');
       setShowSuccess(true);
     }
   }, [cards, showSuccess]);
@@ -45,6 +47,8 @@ export default function Home() {
   // 正解時の演出とリダイレクト
   useEffect(() => {
     if (!showSuccess) return;
+    
+    console.log('💖 演出を表示します');
 
     // キラキラエフェクト
     const confetti = document.createElement("div");
@@ -64,9 +68,11 @@ export default function Home() {
 
     hearts.forEach((heart) => confetti.appendChild(heart));
     document.body.appendChild(confetti);
+    console.log('💖 ハート要素を追加しました');
 
     // エフェクト終了後にDOM要素を削除してログイン画面へ
     const timer = setTimeout(() => {
+      console.log('⏱️ 2.5秒経過、ログイン画面に移動します');
       const element = document.getElementById("confetti-effect");
       if (element) {
         document.body.removeChild(element);
@@ -148,7 +154,7 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-pastel-pink via-pastel-lavender to-pastel-purple p-4">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-pastel-pink via-pastel-lavender to-pastel-purple p-4 sm:p-8">
       <style jsx global>{`
         @keyframes float {
           0% {
@@ -193,30 +199,30 @@ export default function Home() {
       `}</style>
 
       <div
-        className={`bg-white/90 backdrop-blur-sm rounded-3xl shadow-2xl p-8 md:p-12 max-w-2xl w-full ${
+        className={`bg-white/90 backdrop-blur-sm rounded-3xl shadow-2xl p-6 sm:p-8 md:p-12 max-w-md w-full ${
           shake ? "shake" : ""
         }`}
       >
-        <div className="text-center mb-8">
+        <div className="text-center mb-6">
           <div className="flex justify-center mb-4">
             <Heart
-              className="w-16 h-16 text-pastel-pink animate-pulse"
+              className="w-12 h-12 sm:w-16 sm:h-16 text-pastel-pink animate-pulse"
               fill="currentColor"
             />
           </div>
-          <h1 className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-pastel-pink to-pastel-purple mb-2">
+          <h1 className="text-2xl sm:text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-pastel-pink to-pastel-purple mb-2">
             Welcome
           </h1>
-          <p className="text-gray-600 mb-4">
+          <p className="text-sm sm:text-base text-gray-600 mb-4">
             文字を並び替えて
             <br />
             気持ちを伝えてください
           </p>
         </div>
 
-        {/* カードエリア */}
-        <div className="mb-8">
-          <div className="flex justify-center gap-3 flex-wrap">
+        {/* カードエリア - スマホ縦画面用に縦並び */}
+        <div className="mb-6">
+          <div className="flex flex-col items-center gap-3">
             {cards.map((card, index) => (
               <div
                 key={card.id}
@@ -229,18 +235,18 @@ export default function Home() {
                 onTouchMove={handleTouchMove}
                 onTouchEnd={handleTouchEnd}
                 className={`
-                  w-20 h-28 flex items-center justify-center
+                  w-full max-w-[280px] h-20 flex items-center justify-center
                   bg-gradient-to-br from-white to-pink-50
                   border-4 border-pastel-pink
                   rounded-2xl shadow-lg
                   cursor-move select-none
                   transition-all duration-200
-                  hover:shadow-xl hover:scale-105
+                  active:shadow-xl active:scale-105
                   ${draggedCard === index ? "opacity-50 scale-95" : ""}
                   ${showSuccess ? "pulse-scale" : ""}
                 `}
               >
-                <span className="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-br from-pastel-pink to-pastel-purple">
+                <span className="text-5xl sm:text-6xl font-bold text-transparent bg-clip-text bg-gradient-to-br from-pastel-pink to-pastel-purple">
                   {card.char}
                 </span>
               </div>
@@ -250,7 +256,7 @@ export default function Home() {
 
         {showSuccess && (
           <div className="mt-6 text-center">
-            <p className="text-lg font-semibold text-transparent bg-clip-text bg-gradient-to-r from-pastel-pink to-pastel-purple animate-pulse">
+            <p className="text-base sm:text-lg font-semibold text-transparent bg-clip-text bg-gradient-to-r from-pastel-pink to-pastel-purple animate-pulse">
               わーい！ログイン画面に移動します...💖
             </p>
           </div>
