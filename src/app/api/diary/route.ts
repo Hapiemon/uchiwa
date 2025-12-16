@@ -1,11 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@/app/api/auth/[...nextauth]/route';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/lib/auth';
 import { diaryEntrySchema } from '@/lib/validation';
 import { prisma } from '@/lib/db';
 
 export async function GET(req: NextRequest) {
   try {
-    const session = await auth();
+    const session = await getServerSession(authOptions);
     if (!session?.user?.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -18,16 +19,19 @@ export async function GET(req: NextRequest) {
     const entries = await prisma.diaryEntry.findMany({
       where: {
         authorId: session.user.id,
-        content: {
-          contains: search,
-        },
+        OR: [
+          { content: { contains: search } },
+          { title: { contains: search } }
+        ],
       },
-      orderBy: { createdAt: 'desc' },
+      orderBy: { date: 'desc' },
       skip,
       take,
       select: {
         id: true,
+        title: true,
         content: true,
+        date: true,
         createdAt: true,
         updatedAt: true,
       },
@@ -36,7 +40,10 @@ export async function GET(req: NextRequest) {
     const total = await prisma.diaryEntry.count({
       where: {
         authorId: session.user.id,
-        content: { contains: search },
+        OR: [
+          { content: { contains: search } },
+          { title: { contains: search } }
+        ],
       },
     });
 
@@ -52,7 +59,7 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   try {
-    const session = await auth();
+    const session = await getServerSession(authOptions);
     if (!session?.user?.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -70,11 +77,15 @@ export async function POST(req: NextRequest) {
     const entry = await prisma.diaryEntry.create({
       data: {
         authorId: session.user.id,
+        title: parsed.data.title,
         content: parsed.data.content,
+        date: parsed.data.date ? new Date(parsed.data.date) : new Date(),
       },
       select: {
         id: true,
+        title: true,
         content: true,
+        date: true,
         createdAt: true,
         updatedAt: true,
       },

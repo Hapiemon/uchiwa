@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@/app/api/auth/[...nextauth]/route';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/lib/auth';
 import { diaryEntrySchema } from '@/lib/validation';
 import { prisma } from '@/lib/db';
 
@@ -8,7 +9,7 @@ export async function GET(
   { params }: { params: { id: string } }
 ) {
   try {
-    const session = await auth();
+    const session = await getServerSession(authOptions);
     if (!session?.user?.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -18,7 +19,9 @@ export async function GET(
       select: {
         id: true,
         authorId: true,
+        title: true,
         content: true,
+        date: true,
         createdAt: true,
         updatedAt: true,
       },
@@ -47,7 +50,7 @@ export async function PUT(
   { params }: { params: { id: string } }
 ) {
   try {
-    const session = await auth();
+    const session = await getServerSession(authOptions);
     if (!session?.user?.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -77,10 +80,16 @@ export async function PUT(
 
     const updated = await prisma.diaryEntry.update({
       where: { id: params.id },
-      data: { content: parsed.data.content },
+      data: { 
+        title: parsed.data.title,
+        content: parsed.data.content,
+        date: parsed.data.date ? new Date(parsed.data.date) : undefined,
+      },
       select: {
         id: true,
+        title: true,
         content: true,
+        date: true,
         createdAt: true,
         updatedAt: true,
       },
@@ -101,7 +110,7 @@ export async function DELETE(
   { params }: { params: { id: string } }
 ) {
   try {
-    const session = await auth();
+    const session = await getServerSession(authOptions);
     if (!session?.user?.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }

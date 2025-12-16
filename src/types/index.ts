@@ -24,7 +24,9 @@ export interface AuthUser {
 export interface DiaryEntry {
   id: string;
   authorId: string;
+  title?: string | null;
   content: string;
+  date: Date;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -34,7 +36,7 @@ export interface Anniversary {
   userId: string;
   title: string;
   date: Date;
-  repeatInterval: 'NONE' | 'YEARLY';
+  repeatInterval: 'NONE' | 'WEEKLY' | 'MONTHLY' | 'YEARLY';
   notes?: string | null;
   createdAt: Date;
 }

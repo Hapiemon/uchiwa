@@ -15,7 +15,7 @@ export function LayoutContent({ children }: { children: React.ReactNode }) {
     <SessionProvider>
       <PuzzleGuard>
         {!isPuzzlePage && <Header />}
-        <main className={isPuzzlePage ? '' : 'max-w-4xl mx-auto px-4 py-8 pb-24 md:pb-8'}>
+        <main className={isPuzzlePage ? '' : 'max-w-4xl mx-auto px-4 py-8 pb-28'}>
           {children}
         </main>
         {!isPuzzlePage && <TabNav />}

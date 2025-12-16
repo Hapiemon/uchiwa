@@ -16,9 +16,10 @@ export default function ChatListPage() {
       try {
         const response = await fetch('/api/chat/conversations');
         const data = await response.json();
-        setConversations(data.conversations);
+        setConversations(data.conversations || []);
       } catch (error) {
         showToast('読み込み失敗', 'error');
+        setConversations([]);
       } finally {
         setLoading(false);
       }
@@ -35,13 +36,21 @@ export default function ChatListPage() {
 
   return (
     <div>
-      <h1 className="text-3xl font-bold mb-6 text-transparent bg-clip-text bg-gradient-to-r from-pastel-pink to-pastel-purple">
-        チャット
-      </h1>
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-pastel-pink to-pastel-purple">
+          チャット
+        </h1>
+        <Link
+          href="/chat/create"
+          className="bg-pastel-pink text-white px-4 py-2 rounded-lg hover:opacity-90 transition"
+        >
+          新規作成
+        </Link>
+      </div>
 
       {loading ? (
         <div className="text-center py-8">読み込み中...</div>
-      ) : conversations.length === 0 ? (
+      ) : !conversations || conversations.length === 0 ? (
         <div className="text-center py-8 text-gray-500">
           チャットがまだありません 💬
         </div>
@@ -53,6 +62,16 @@ export default function ChatListPage() {
             )?.user;
             const lastMessage = conversation.messages[0];
 
+            // グループ名またはユーザー名を表示
+            const displayName = conversation.isDirect
+              ? otherUser?.displayName || 'Chat'
+              : conversation.title || `グループ (${conversation.participants.length}人)`;
+
+            // グループアバター表示用
+            const displayAvatar = conversation.isDirect
+              ? otherUser?.avatarUrl
+              : null;
+
             return (
               <Link
                 key={conversation.id}
@@ -60,17 +79,19 @@ export default function ChatListPage() {
                 className="block bg-white rounded-lg shadow hover:shadow-lg transition p-4"
               >
                 <div className="flex items-center gap-3">
-                  {otherUser?.avatarUrl && (
+                  {displayAvatar ? (
                     <img
-                      src={otherUser.avatarUrl}
-                      alt={otherUser.displayName || ''}
+                      src={displayAvatar}
+                      alt={displayName}
                       className="w-12 h-12 rounded-full"
                     />
+                  ) : (
+                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-pastel-pink to-pastel-purple flex items-center justify-center text-white font-bold">
+                      {conversation.participants.length}
+                    </div>
                   )}
                   <div className="flex-1">
-                    <h3 className="font-semibold">
-                      {otherUser?.displayName || 'Chat'}
-                    </h3>
+                    <h3 className="font-semibold">{displayName}</h3>
                     {lastMessage && (
                       <p className="text-sm text-gray-600 line-clamp-1">
                         {lastMessage.content}

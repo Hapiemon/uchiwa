@@ -86,6 +86,8 @@ export default function CreateAnniversaryPage() {
             className="w-full px-4 py-2 border border-pink-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-pastel-pink"
           >
             <option value="NONE">なし</option>
+            <option value="WEEKLY">毎週</option>
+            <option value="MONTHLY">毎月</option>
             <option value="YEARLY">毎年</option>
           </select>
         </div>

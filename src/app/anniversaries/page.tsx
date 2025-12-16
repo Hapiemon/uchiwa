@@ -19,9 +19,10 @@ export default function AnniversariesPage() {
       try {
         const response = await fetch('/api/anniversaries');
         const data = await response.json();
-        setAnniversaries(data.anniversaries);
+        setAnniversaries(data.anniversaries || []);
       } catch (error) {
         showToast('読み込み失敗', 'error');
+        setAnniversaries([]);
       } finally {
         setLoading(false);
       }
@@ -64,7 +65,7 @@ export default function AnniversariesPage() {
 
       {loading ? (
         <div className="text-center py-8">読み込み中...</div>
-      ) : anniversaries.length === 0 ? (
+      ) : !anniversaries || anniversaries.length === 0 ? (
         <div className="text-center py-8 text-gray-500">
           記念日がまだありません 📅
         </div>

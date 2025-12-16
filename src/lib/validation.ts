@@ -22,7 +22,9 @@ export const profileUpdateSchema = z.object({
 });
 
 export const diaryEntrySchema = z.object({
+  title: z.string().max(200).optional().nullable(),
   content: z.string().min(1, 'Content cannot be empty').max(10000),
+  date: z.string().optional(),
 });
 
 export const anniversarySchema = z.object({
@@ -30,7 +32,7 @@ export const anniversarySchema = z.object({
   date: z.string().refine((val) => !isNaN(Date.parse(val)), {
     message: 'Invalid date',
   }),
-  repeatInterval: z.enum(['NONE', 'YEARLY']),
+  repeatInterval: z.enum(['NONE', 'WEEKLY', 'MONTHLY', 'YEARLY']),
   notes: z.string().max(500).optional(),
 });
 
