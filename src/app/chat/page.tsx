@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
-import { useSession } from 'next-auth/react';
-import { useEffect, useState, useRef } from 'react';
-import Link from 'next/link';
-import { useToast } from '@/components/Toast';
-import { Trash2 } from 'lucide-react';
+import { useSession } from "next-auth/react";
+import { useEffect, useState, useRef } from "react";
+import Link from "next/link";
+import { useToast } from "@/components/Toast";
+import { Trash2 } from "lucide-react";
 
 export default function ChatListPage() {
   const { data: session } = useSession();
@@ -18,11 +18,11 @@ export default function ChatListPage() {
   useEffect(() => {
     const fetchConversations = async () => {
       try {
-        const response = await fetch('/api/chat/conversations');
+        const response = await fetch("/api/chat/conversations");
         const data = await response.json();
         setConversations(data.conversations || []);
       } catch (error) {
-        showToast('読み込み失敗', 'error');
+        showToast("読み込み失敗", "error");
         setConversations([]);
       } finally {
         setLoading(false);
@@ -37,21 +37,24 @@ export default function ChatListPage() {
   const handleDelete = async (conversationId: string, e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    
+
     try {
-      const response = await fetch(`/api/chat/conversations/${conversationId}`, {
-        method: 'DELETE',
-      });
+      const response = await fetch(
+        `/api/chat/conversations/${conversationId}`,
+        {
+          method: "DELETE",
+        }
+      );
 
       if (!response.ok) {
-        throw new Error('削除に失敗しました');
+        throw new Error("削除に失敗しました");
       }
 
-      setConversations(conversations.filter(c => c.id !== conversationId));
+      setConversations(conversations.filter((c) => c.id !== conversationId));
       setSwipedId(null);
-      showToast('チャットルームを削除しました', 'success');
+      showToast("チャットルームを削除しました", "success");
     } catch (error) {
-      showToast('削除に失敗しました', 'error');
+      showToast("削除に失敗しました", "error");
     }
   };
 
@@ -65,60 +68,82 @@ export default function ChatListPage() {
     const diff = startXRef.current - currentX;
     currentXRef.current = diff;
 
-    // 左スワイプのみ（diffが正の値）
-    if (diff > 0 && diff < 100) {
-      const element = e.currentTarget as HTMLElement;
+    const element = e.currentTarget as HTMLElement;
+
+    // 左スワイプ（削除）と右スワイプ（キャンセル）の両方に対応
+    if (diff > 0 && diff < 120) {
+      // 左スワイプ（削除ボタン表示）
       element.style.transform = `translateX(-${diff}px)`;
+      element.style.transition = "none";
+    } else if (diff < 0 && swipedId === conversationId) {
+      // 右スワイプ（削除ボタンを閉じる）
+      const resetDiff = Math.max(diff, -120);
+      element.style.transform = `translateX(${-120 + Math.abs(resetDiff)}px)`;
+      element.style.transition = "none";
     }
   };
 
   const handleTouchEnd = (e: React.TouchEvent, conversationId: string) => {
     const element = e.currentTarget as HTMLElement;
-    
-    // スワイプ距離が50px以上なら削除ボタン表示
-    if (currentXRef.current > 50) {
-      element.style.transform = 'translateX(-80px)';
+    element.style.transition = "transform 0.3s ease-out";
+
+    // スワイプ距離が70px以上なら削除ボタン表示、それ以外は元に戻す
+    if (currentXRef.current > 70) {
+      element.style.transform = "translateX(-120px)";
       setSwipedId(conversationId);
-    } else {
-      element.style.transform = 'translateX(0)';
+    } else if (currentXRef.current < -30 && swipedId === conversationId) {
+      // 右スワイプで閉じる
+      element.style.transform = "translateX(0)";
       setSwipedId(null);
+    } else if (swipedId !== conversationId) {
+      element.style.transform = "translateX(0)";
     }
-    
+
     currentXRef.current = 0;
   };
 
   const handleMouseDown = (e: React.MouseEvent, conversationId: string) => {
     startXRef.current = e.clientX;
     currentXRef.current = 0;
-    
+
     const element = e.currentTarget as HTMLElement;
-    
+
     const handleMouseMove = (moveEvent: MouseEvent) => {
       const currentX = moveEvent.clientX;
       const diff = startXRef.current - currentX;
       currentXRef.current = diff;
 
-      if (diff > 0 && diff < 100) {
+      // 左ドラッグと右ドラッグの両方に対応
+      if (diff > 0 && diff < 120) {
         element.style.transform = `translateX(-${diff}px)`;
+        element.style.transition = "none";
+      } else if (diff < 0 && swipedId === conversationId) {
+        const resetDiff = Math.max(diff, -120);
+        element.style.transform = `translateX(${-120 + Math.abs(resetDiff)}px)`;
+        element.style.transition = "none";
       }
     };
 
     const handleMouseUp = () => {
-      if (currentXRef.current > 50) {
-        element.style.transform = 'translateX(-80px)';
+      element.style.transition = "transform 0.3s ease-out";
+
+      if (currentXRef.current > 70) {
+        element.style.transform = "translateX(-120px)";
         setSwipedId(conversationId);
-      } else {
-        element.style.transform = 'translateX(0)';
+      } else if (currentXRef.current < -30 && swipedId === conversationId) {
+        element.style.transform = "translateX(0)";
         setSwipedId(null);
+      } else if (swipedId !== conversationId) {
+        element.style.transform = "translateX(0)";
       }
-      
+
       currentXRef.current = 0;
-      document.removeEventListener('mousemove', handleMouseMove);
-      document.removeEventListener('mouseup', handleMouseUp);
+      document.removeEventListener("mousemove", handleMouseMove);
+      document.removeEventListener("mouseup", handleMouseUp);
     };
 
-    document.addEventListener('mousemove', handleMouseMove);
-    document.addEventListener('mouseup', handleMouseUp);
+    document.addEventListener("mousemove", handleMouseMove);
+    document.addEventListener("mouseup", handleMouseUp);
   };
 
   if (!session) {
@@ -155,8 +180,9 @@ export default function ChatListPage() {
 
             // グループ名またはユーザー名を表示
             const displayName = conversation.isDirect
-              ? otherUser?.displayName || 'Chat'
-              : conversation.title || `グループ (${conversation.participants.length}人)`;
+              ? otherUser?.displayName || "Chat"
+              : conversation.title ||
+                `グループ (${conversation.participants.length}人)`;
 
             // グループアバター表示用
             const displayAvatar = conversation.isDirect
@@ -164,19 +190,25 @@ export default function ChatListPage() {
               : null;
 
             return (
-              <div key={conversation.id} className="relative overflow-hidden">
+              <div
+                key={conversation.id}
+                className="relative overflow-hidden rounded-lg bg-white shadow hover:shadow-lg"
+              >
                 <div
-                  className="relative bg-white rounded-lg shadow hover:shadow-lg transition-all duration-200 cursor-pointer"
-                  style={{ transform: 'translateX(0)' }}
+                  className="relative cursor-pointer select-none"
+                  style={{
+                    transform:
+                      swipedId === conversation.id
+                        ? "translateX(-120px)"
+                        : "translateX(0)",
+                    transition: "transform 0.3s ease-out",
+                  }}
                   onTouchStart={(e) => handleTouchStart(e, conversation.id)}
                   onTouchMove={(e) => handleTouchMove(e, conversation.id)}
                   onTouchEnd={(e) => handleTouchEnd(e, conversation.id)}
                   onMouseDown={(e) => handleMouseDown(e, conversation.id)}
                 >
-                  <Link
-                    href={`/chat/${conversation.id}`}
-                    className="block p-4"
-                  >
+                  <Link href={`/chat/${conversation.id}`} className="block p-4 bg-white">
                     <div className="flex items-center gap-3">
                       {displayAvatar ? (
                         <img
@@ -189,29 +221,34 @@ export default function ChatListPage() {
                           {conversation.participants.length}
                         </div>
                       )}
-                      <div className="flex-1">
-                        <h3 className="font-semibold">{displayName}</h3>
+                      <div className="flex-1 min-w-0">
+                        <h3 className="font-semibold truncate">
+                          {displayName}
+                        </h3>
                         {lastMessage && (
-                          <p className="text-sm text-gray-600 line-clamp-1">
+                          <p className="text-sm text-gray-600 truncate">
                             {lastMessage.content}
                           </p>
                         )}
                       </div>
+                      <div className="text-xs text-gray-400 flex items-center gap-1">
+                        <span className="opacity-50">←</span>
+                        <Trash2 className="w-3 h-3 opacity-30" />
+                      </div>
                     </div>
                   </Link>
                 </div>
-                
-                {/* 削除ボタン */}
-                <button
-                  onClick={(e) => handleDelete(conversation.id, e)}
-                  className="absolute right-0 top-0 bottom-0 w-20 bg-red-500 flex items-center justify-center text-white rounded-r-lg"
-                  style={{ 
-                    transform: 'translateX(80px)',
-                    transition: 'none'
-                  }}
-                >
-                  <Trash2 className="w-5 h-5" />
-                </button>
+
+                {/* 削除ボタン（右側に隠れて配置） */}
+                <div className="absolute right-0 top-0 bottom-0 w-[120px] bg-gradient-to-l from-red-600 to-red-500 pointer-events-auto">
+                  <button
+                    onClick={(e) => handleDelete(conversation.id, e)}
+                    className="w-full h-full flex flex-col items-center justify-center text-white gap-1 hover:from-red-700 hover:to-red-600 transition-colors"
+                  >
+                    <Trash2 className="w-6 h-6" />
+                    <span className="text-xs font-medium">削除</span>
+                  </button>
+                </div>
               </div>
             );
           })}

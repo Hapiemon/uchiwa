@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
-import { useSession } from 'next-auth/react';
-import { useEffect, useState, useRef } from 'react';
-import { useParams, useRouter } from 'next/navigation';
-import { useToast } from '@/components/Toast';
-import { Send, ArrowLeft, Users } from 'lucide-react';
+import { useSession } from "next-auth/react";
+import { useEffect, useState, useRef } from "react";
+import { useParams, useRouter } from "next/navigation";
+import { useToast } from "@/components/Toast";
+import { Send, ArrowLeft, Users } from "lucide-react";
 
 interface Message {
   id: string;
@@ -37,7 +37,7 @@ export default function ChatRoomPage() {
   const { show: showToast } = useToast();
   const [conversation, setConversation] = useState<Conversation | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
-  const [newMessage, setNewMessage] = useState('');
+  const [newMessage, setNewMessage] = useState("");
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -62,7 +62,7 @@ export default function ChatRoomPage() {
           setMessages(msgData.messages || []);
         }
       } catch (error) {
-        showToast('読み込み失敗', 'error');
+        showToast("読み込み失敗", "error");
       } finally {
         setLoading(false);
       }
@@ -74,7 +74,7 @@ export default function ChatRoomPage() {
   }, [session, conversationId, showToast]);
 
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
   const handleSend = async (e: React.FormEvent) => {
@@ -83,9 +83,9 @@ export default function ChatRoomPage() {
 
     setSending(true);
     try {
-      const response = await fetch('/api/chat/messages', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const response = await fetch("/api/chat/messages", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           conversationId,
           content: newMessage.trim(),
@@ -95,12 +95,12 @@ export default function ChatRoomPage() {
       if (response.ok) {
         const data = await response.json();
         setMessages((prev) => [...prev, data.message]);
-        setNewMessage('');
+        setNewMessage("");
       } else {
-        showToast('送信失敗', 'error');
+        showToast("送信失敗", "error");
       }
     } catch (error) {
-      showToast('送信失敗', 'error');
+      showToast("送信失敗", "error");
     } finally {
       setSending(false);
     }
@@ -120,15 +120,19 @@ export default function ChatRoomPage() {
 
   // チャット名を決定
   const chatTitle = conversation.isDirect
-    ? conversation.participants.find((p) => p.user.id !== session.user?.id)?.user.displayName || 'Chat'
+    ? conversation.participants.find((p) => p.user.id !== session.user?.id)
+        ?.user.displayName || "Chat"
     : conversation.title || `グループ (${conversation.participants.length}人)`;
 
   return (
-    <div className="fixed inset-0 flex flex-col bg-gray-50" style={{ paddingTop: '72px', paddingBottom: '73px' }}>
+    <div
+      className="fixed inset-0 flex flex-col bg-gray-50"
+      style={{ paddingTop: "72px", paddingBottom: "73px" }}
+    >
       {/* ヘッダー */}
       <div className="bg-white border-b border-gray-200 px-4 py-3 flex items-center gap-3 flex-shrink-0">
         <button
-          onClick={() => router.back()}
+          onClick={() => router.push('/chat')}
           className="text-gray-600 hover:text-gray-800"
         >
           <ArrowLeft className="w-6 h-6" />
@@ -156,9 +160,13 @@ export default function ChatRoomPage() {
             return (
               <div
                 key={message.id}
-                className={`flex ${isMe ? 'justify-end' : 'justify-start'}`}
+                className={`flex ${isMe ? "justify-end" : "justify-start"}`}
               >
-                <div className={`flex gap-2 max-w-[75%] ${isMe ? 'flex-row-reverse' : 'flex-row'}`}>
+                <div
+                  className={`flex gap-2 max-w-[75%] ${
+                    isMe ? "flex-row-reverse" : "flex-row"
+                  }`}
+                >
                   {/* アバター */}
                   {!isMe && (
                     <div className="flex-shrink-0">
@@ -186,16 +194,22 @@ export default function ChatRoomPage() {
                     <div
                       className={`px-4 py-2 rounded-2xl ${
                         isMe
-                          ? 'bg-pastel-pink text-white rounded-br-sm'
-                          : 'bg-white text-gray-800 rounded-bl-sm shadow-sm'
+                          ? "bg-pastel-pink text-white rounded-br-sm"
+                          : "bg-white text-gray-800 rounded-bl-sm shadow-sm"
                       }`}
                     >
-                      <p className="whitespace-pre-wrap break-words">{message.content}</p>
+                      <p className="whitespace-pre-wrap break-words">
+                        {message.content}
+                      </p>
                     </div>
-                    <span className={`text-xs text-gray-500 mt-1 px-2 ${isMe ? 'text-right' : 'text-left'}`}>
-                      {new Date(message.createdAt).toLocaleTimeString('ja-JP', {
-                        hour: '2-digit',
-                        minute: '2-digit',
+                    <span
+                      className={`text-xs text-gray-500 mt-1 px-2 ${
+                        isMe ? "text-right" : "text-left"
+                      }`}
+                    >
+                      {new Date(message.createdAt).toLocaleTimeString("ja-JP", {
+                        hour: "2-digit",
+                        minute: "2-digit",
                       })}
                     </span>
                   </div>
