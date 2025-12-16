@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { BookText, Calendar, MessageCircle, User } from 'lucide-react';
+import { BookText, Calendar, MessageCircle, Heart } from 'lucide-react';
 
 export function TabNav() {
   const pathname = usePathname();
@@ -11,7 +11,7 @@ export function TabNav() {
     { href: '/diary', icon: BookText, label: '日記', key: 'diary' },
     { href: '/anniversaries', icon: Calendar, label: '記念日', key: 'anniversaries' },
     { href: '/chat', icon: MessageCircle, label: 'チャット', key: 'chat' },
-    { href: '/profile', icon: User, label: 'プロフィール', key: 'profile' },
+    { href: '/memories', icon: Heart, label: '思い出', key: 'memories' },
   ];
 
   return (

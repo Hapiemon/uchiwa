@@ -34,8 +34,6 @@ export default function AnniversariesPage() {
   }, [session, showToast]);
 
   const handleDelete = async (id: string) => {
-    if (!confirm('削除してよろしいですか?')) return;
-
     try {
       await fetch(`/api/anniversaries/${id}`, { method: 'DELETE' });
       setAnniversaries((prev) => prev.filter((a) => a.id !== id));

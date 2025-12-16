@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useSession, signOut } from 'next-auth/react';
-import { Heart, Youtube, Image } from 'lucide-react';
+import { Heart, Youtube, Image, User } from 'lucide-react';
 import { useState, useEffect } from 'react';
 
 export function Header() {
@@ -26,7 +26,7 @@ export function Header() {
   }, [session]);
 
   return (
-    <header className="bg-gradient-to-r from-pastel-pink to-pastel-purple shadow-md">
+    <header className="fixed top-0 left-0 right-0 bg-gradient-to-r from-pastel-pink to-pastel-purple shadow-md z-40">
       <div className="max-w-4xl mx-auto px-4 py-4 flex justify-between items-center">
         <Link href="/" className="flex items-center gap-2 font-bold text-2xl text-white">
           <Heart className="w-6 h-6" />
@@ -59,7 +59,14 @@ export function Header() {
                   <span className="hidden sm:inline">写真</span>
                 </a>
               )}
-              <span className="text-white text-sm hidden md:inline">{session.user?.email}</span>
+              <Link
+                href="/profile"
+                className="flex items-center gap-1 px-3 py-2 bg-white/20 hover:bg-white/30 rounded-full transition text-white text-sm"
+                title="プロフィール"
+              >
+                <User className="w-4 h-4" />
+                <span className="hidden sm:inline">プロフィール</span>
+              </Link>
               <button
                 onClick={() => signOut({ redirectTo: '/login' })}
                 className="px-4 py-2 bg-white text-pink-500 rounded-full font-semibold text-sm hover:bg-pink-50 transition"

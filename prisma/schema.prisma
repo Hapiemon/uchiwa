@@ -102,3 +102,15 @@ model Message {
   @@index([senderId])
   @@map("messages")
 }
+
+model MemoryLink {
+  id        String   @id @default(cuid())
+  title     String
+  url       String
+  order     Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([order])
+  @@map("memory_links")
+}

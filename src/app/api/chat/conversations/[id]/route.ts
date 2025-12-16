@@ -52,3 +52,49 @@ export async function GET(
     );
   }
 }
+
+export async function DELETE(
+  req: NextRequest,
+  { params }: { params: { id: string } }
+) {
+  try {
+    const session = await getServerSession(authOptions);
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const conversationId = params.id;
+
+    // 会話が存在し、ユーザーが参加者であることを確認
+    const conversation = await prisma.conversation.findFirst({
+      where: {
+        id: conversationId,
+        participants: {
+          some: {
+            userId: session.user.id,
+          },
+        },
+      },
+    });
+
+    if (!conversation) {
+      return NextResponse.json(
+        { error: '会話が見つかりません' },
+        { status: 404 }
+      );
+    }
+
+    // 会話を削除（Cascadeによりメッセージと参加者も削除される）
+    await prisma.conversation.delete({
+      where: { id: conversationId },
+    });
+
+    return NextResponse.json({ message: '削除しました' });
+  } catch (error) {
+    console.error('Conversation DELETE error:', error);
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
+  }
+}
