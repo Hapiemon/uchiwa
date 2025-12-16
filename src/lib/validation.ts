@@ -17,8 +17,6 @@ export const profileUpdateSchema = z.object({
   bio: z.string().max(500).optional(),
   timezone: z.string(),
   avatarUrl: z.string().url().optional().or(z.literal('')),
-  youtubeUrl: z.string().url().optional().or(z.literal('')),
-  googlePhotosUrl: z.string().url().optional().or(z.literal('')),
 });
 
 export const diaryEntrySchema = z.object({

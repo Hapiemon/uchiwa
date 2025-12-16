@@ -4,7 +4,7 @@ import { useSession } from 'next-auth/react';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useToast } from '@/components/Toast';
-import { Youtube, Image, Save } from 'lucide-react';
+import { Save } from 'lucide-react';
 
 export default function EditProfilePage() {
   const { data: session } = useSession();
@@ -17,8 +17,6 @@ export default function EditProfilePage() {
     displayName: '',
     bio: '',
     timezone: 'Asia/Tokyo',
-    youtubeUrl: '',
-    googlePhotosUrl: '',
   });
 
   useEffect(() => {
@@ -32,8 +30,6 @@ export default function EditProfilePage() {
             displayName: data.user.displayName || '',
             bio: data.user.bio || '',
             timezone: data.user.timezone || 'Asia/Tokyo',
-            youtubeUrl: data.user.youtubeUrl || '',
-            googlePhotosUrl: data.user.googlePhotosUrl || '',
           });
         }
       } catch (error) {
@@ -151,49 +147,6 @@ export default function EditProfilePage() {
             <option value="America/New_York">America/New_York</option>
             <option value="Europe/London">Europe/London</option>
           </select>
-        </div>
-
-        {/* メディアリンクセクション */}
-        <div className="border-t pt-6 space-y-4">
-          <h2 className="text-lg font-semibold text-gray-800 mb-4">思い出のリンク</h2>
-          
-          <div>
-            <label htmlFor="youtubeUrl" className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
-              <Youtube className="w-5 h-5 text-red-600" />
-              YouTubeリンク
-            </label>
-            <input
-              type="url"
-              id="youtubeUrl"
-              name="youtubeUrl"
-              value={formData.youtubeUrl}
-              onChange={handleChange}
-              placeholder="https://youtube.com/..."
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-300"
-            />
-            <p className="mt-1 text-xs text-gray-500">
-              YouTubeチャンネルやプレイリストのURLを入力してください
-            </p>
-          </div>
-
-          <div>
-            <label htmlFor="googlePhotosUrl" className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
-              <Image className="w-5 h-5 text-blue-600" />
-              Google Photosリンク
-            </label>
-            <input
-              type="url"
-              id="googlePhotosUrl"
-              name="googlePhotosUrl"
-              value={formData.googlePhotosUrl}
-              onChange={handleChange}
-              placeholder="https://photos.app.goo.gl/..."
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-300"
-            />
-            <p className="mt-1 text-xs text-gray-500">
-              共有アルバムのURLを入力してください
-            </p>
-          </div>
         </div>
 
         <div className="flex gap-4">

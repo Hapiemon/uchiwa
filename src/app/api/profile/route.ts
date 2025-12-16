@@ -21,8 +21,6 @@ export async function GET(req: NextRequest) {
         avatarUrl: true,
         bio: true,
         timezone: true,
-        youtubeUrl: true,
-        googlePhotosUrl: true,
         createdAt: true,
       },
     });
@@ -66,8 +64,6 @@ export async function PUT(req: NextRequest) {
         bio: parsed.data.bio,
         timezone: parsed.data.timezone,
         avatarUrl: parsed.data.avatarUrl || null,
-        youtubeUrl: parsed.data.youtubeUrl || null,
-        googlePhotosUrl: parsed.data.googlePhotosUrl || null,
       },
       select: {
         id: true,
@@ -77,8 +73,6 @@ export async function PUT(req: NextRequest) {
         avatarUrl: true,
         bio: true,
         timezone: true,
-        youtubeUrl: true,
-        googlePhotosUrl: true,
       },
     });
 

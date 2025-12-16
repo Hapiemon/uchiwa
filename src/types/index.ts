@@ -29,6 +29,19 @@ export interface DiaryEntry {
   date: Date;
   createdAt: Date;
   updatedAt: Date;
+  author?: {
+    id: string;
+    displayName?: string | null;
+    name: string;
+  };
+  editors?: Array<{
+    user: {
+      id: string;
+      displayName?: string | null;
+      name: string;
+    };
+    editedAt: string;
+  }>;
 }
 
 export interface Anniversary {
