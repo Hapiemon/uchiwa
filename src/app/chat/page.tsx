@@ -204,7 +204,7 @@ export default function ChatListPage() {
             } else {
               // グループチャットの場合、参加者名を表示
               const participantNames = conversation.participants
-                .map((p: any) => p.user?.displayName || p.user?.name || '不明')
+                .map((p: any) => p.user?.displayName || '不明')
                 .join('/');
               const baseTitle = conversation.title || 'グループ';
               displayName = `${baseTitle} (${participantNames})`;

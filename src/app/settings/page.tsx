@@ -94,6 +94,7 @@ export default function SettingsPage() {
     if (session) {
       fetchData();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [session]);
 
   const openAddModal = () => {
