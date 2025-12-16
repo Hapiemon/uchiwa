@@ -26,7 +26,7 @@ export function Header() {
                 <span className="hidden sm:inline">プロフィール</span>
               </Link>
               <button
-                onClick={() => signOut({ redirectTo: '/login' })}
+                onClick={() => signOut({ callbackUrl: '/login' })}
                 className="px-4 py-2 bg-white text-pink-500 rounded-full font-semibold text-sm hover:bg-pink-50 transition"
               >
                 ログアウト

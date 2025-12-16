@@ -61,8 +61,12 @@ export default function DiaryListPage() {
       ) : (
         <Calendar
           entries={entries.map(e => ({
-            ...e,
-            date: new Date(e.createdAt)
+            id: e.id,
+            date: new Date(e.date),
+            title: e.title,
+            content: e.content,
+            author: e.author,
+            editors: e.editors
           }))}
           onDateClick={handleDateClick}
           onDateWithEntryClick={handleDateWithEntryClick}

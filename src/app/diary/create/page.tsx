@@ -2,10 +2,10 @@
 
 import { useSession } from 'next-auth/react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useState } from 'react';
+import { useState, Suspense } from 'react';
 import { useToast } from '@/components/Toast';
 
-export default function CreateDiaryPage() {
+function CreateDiaryForm() {
   const { data: session } = useSession();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -126,5 +126,13 @@ export default function CreateDiaryPage() {
         </div>
       </form>
     </div>
+  );
+}
+
+export default function CreateDiaryPage() {
+  return (
+    <Suspense fallback={<div className="text-center py-8">読み込み中...</div>}>
+      <CreateDiaryForm />
+    </Suspense>
   );
 }
