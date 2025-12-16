@@ -69,29 +69,35 @@ export default function ChatListPage() {
     currentXRef.current = diff;
 
     const element = e.currentTarget as HTMLElement;
+    const parentWidth = element.offsetWidth;
+    const maxTranslate = parentWidth * 0.3; // 30%まで
 
     // 左スワイプ（削除）と右スワイプ（キャンセル）の両方に対応
-    if (diff > 0 && diff < 120) {
+    if (diff > 0 && diff < maxTranslate) {
       // 左スワイプ（削除ボタン表示）
-      element.style.transform = `translateX(-${diff}px)`;
+      const percentage = (diff / parentWidth) * 100;
+      element.style.transform = `translateX(-${percentage}%)`;
       element.style.transition = "none";
     } else if (diff < 0 && swipedId === conversationId) {
       // 右スワイプ（削除ボタンを閉じる）
-      const resetDiff = Math.max(diff, -120);
-      element.style.transform = `translateX(${-120 + Math.abs(resetDiff)}px)`;
+      const resetDiff = Math.max(diff, -maxTranslate);
+      const percentage = ((-maxTranslate + Math.abs(resetDiff)) / parentWidth) * 100;
+      element.style.transform = `translateX(-${percentage}%)`;
       element.style.transition = "none";
     }
   };
 
   const handleTouchEnd = (e: React.TouchEvent, conversationId: string) => {
     const element = e.currentTarget as HTMLElement;
+    const parentWidth = element.offsetWidth;
+    const threshold = parentWidth * 0.2; // 20%の位置で確定
     element.style.transition = "transform 0.3s ease-out";
 
-    // スワイプ距離が70px以上なら削除ボタン表示、それ以外は元に戻す
-    if (currentXRef.current > 70) {
-      element.style.transform = "translateX(-120px)";
+    // スワイプ距離が20%以上なら削除ボタン表示、それ以外は元に戻す
+    if (currentXRef.current > threshold) {
+      element.style.transform = "translateX(-30%)";
       setSwipedId(conversationId);
-    } else if (currentXRef.current < -30 && swipedId === conversationId) {
+    } else if (currentXRef.current < -(threshold * 0.5) && swipedId === conversationId) {
       // 右スワイプで閉じる
       element.style.transform = "translateX(0)";
       setSwipedId(null);
@@ -107,6 +113,8 @@ export default function ChatListPage() {
     currentXRef.current = 0;
 
     const element = e.currentTarget as HTMLElement;
+    const parentWidth = element.offsetWidth;
+    const maxTranslate = parentWidth * 0.3; // 30%まで
 
     const handleMouseMove = (moveEvent: MouseEvent) => {
       const currentX = moveEvent.clientX;
@@ -114,23 +122,26 @@ export default function ChatListPage() {
       currentXRef.current = diff;
 
       // 左ドラッグと右ドラッグの両方に対応
-      if (diff > 0 && diff < 120) {
-        element.style.transform = `translateX(-${diff}px)`;
+      if (diff > 0 && diff < maxTranslate) {
+        const percentage = (diff / parentWidth) * 100;
+        element.style.transform = `translateX(-${percentage}%)`;
         element.style.transition = "none";
       } else if (diff < 0 && swipedId === conversationId) {
-        const resetDiff = Math.max(diff, -120);
-        element.style.transform = `translateX(${-120 + Math.abs(resetDiff)}px)`;
+        const resetDiff = Math.max(diff, -maxTranslate);
+        const percentage = ((-maxTranslate + Math.abs(resetDiff)) / parentWidth) * 100;
+        element.style.transform = `translateX(-${percentage}%)`;
         element.style.transition = "none";
       }
     };
 
     const handleMouseUp = () => {
+      const threshold = parentWidth * 0.2; // 20%の位置で確定
       element.style.transition = "transform 0.3s ease-out";
 
-      if (currentXRef.current > 70) {
-        element.style.transform = "translateX(-120px)";
+      if (currentXRef.current > threshold) {
+        element.style.transform = "translateX(-30%)";
         setSwipedId(conversationId);
-      } else if (currentXRef.current < -30 && swipedId === conversationId) {
+      } else if (currentXRef.current < -(threshold * 0.5) && swipedId === conversationId) {
         element.style.transform = "translateX(0)";
         setSwipedId(null);
       } else if (swipedId !== conversationId) {
@@ -192,14 +203,26 @@ export default function ChatListPage() {
             return (
               <div
                 key={conversation.id}
-                className="relative overflow-hidden rounded-lg bg-white shadow hover:shadow-lg"
+                className="relative overflow-hidden rounded-lg"
               >
+                {/* 削除ボタン（背景レイヤー - カードと同じサイズ） */}
+                <button
+                  onClick={(e) => handleDelete(conversation.id, e)}
+                  className="absolute inset-0 bg-gradient-to-l from-red-600 to-red-500 flex items-center justify-end pr-4 text-white hover:from-red-700 hover:to-red-600 transition-colors"
+                >
+                  <div className="flex flex-col items-center gap-1 w-[30%] min-w-[80px]">
+                    <Trash2 className="w-6 h-6" />
+                    <span className="text-xs font-medium">削除</span>
+                  </div>
+                </button>
+
+                {/* カード（前面レイヤー） */}
                 <div
-                  className="relative cursor-pointer select-none"
+                  className="relative z-10 bg-white shadow hover:shadow-lg cursor-pointer select-none rounded-lg"
                   style={{
                     transform:
                       swipedId === conversation.id
-                        ? "translateX(-120px)"
+                        ? "translateX(-30%)"
                         : "translateX(0)",
                     transition: "transform 0.3s ease-out",
                   }}
@@ -208,7 +231,10 @@ export default function ChatListPage() {
                   onTouchEnd={(e) => handleTouchEnd(e, conversation.id)}
                   onMouseDown={(e) => handleMouseDown(e, conversation.id)}
                 >
-                  <Link href={`/chat/${conversation.id}`} className="block p-4 bg-white">
+                  <Link
+                    href={`/chat/${conversation.id}`}
+                    className="block p-4 bg-white rounded-lg"
+                  >
                     <div className="flex items-center gap-3">
                       {displayAvatar ? (
                         <img
@@ -237,17 +263,6 @@ export default function ChatListPage() {
                       </div>
                     </div>
                   </Link>
-                </div>
-
-                {/* 削除ボタン（右側に隠れて配置） */}
-                <div className="absolute right-0 top-0 bottom-0 w-[120px] bg-gradient-to-l from-red-600 to-red-500 pointer-events-auto">
-                  <button
-                    onClick={(e) => handleDelete(conversation.id, e)}
-                    className="w-full h-full flex flex-col items-center justify-center text-white gap-1 hover:from-red-700 hover:to-red-600 transition-colors"
-                  >
-                    <Trash2 className="w-6 h-6" />
-                    <span className="text-xs font-medium">削除</span>
-                  </button>
                 </div>
               </div>
             );
