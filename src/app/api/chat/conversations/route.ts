@@ -4,6 +4,8 @@ import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/db';
 import { z } from 'zod';
 
+export const dynamic = 'force-dynamic';
+
 const createConversationSchema = z.object({
   userIds: z.array(z.string()).min(1),
   title: z.string().nullable().optional(),

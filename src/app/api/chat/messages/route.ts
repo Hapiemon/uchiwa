@@ -5,6 +5,8 @@ import { messageSchema } from "@/lib/validation";
 import { prisma } from "@/lib/db";
 import { rateLimit } from "@/lib/rate-limit";
 
+export const dynamic = 'force-dynamic';
+
 export async function GET(req: NextRequest) {
   try {
     const session = await getServerSession(authOptions);

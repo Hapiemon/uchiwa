@@ -4,6 +4,8 @@ import { authOptions } from '@/lib/auth';
 import { profileUpdateSchema } from '@/lib/validation';
 import { prisma } from '@/lib/db';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET(req: NextRequest) {
   try {
     const session = await nextAuthGetServerSession(authOptions);

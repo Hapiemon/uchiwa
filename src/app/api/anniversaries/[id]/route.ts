@@ -4,6 +4,8 @@ import { authOptions } from '@/lib/auth';
 import { anniversarySchema } from '@/lib/validation';
 import { prisma } from '@/lib/db';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
