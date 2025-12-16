@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
-import { useSession } from 'next-auth/react';
-import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { useToast } from '@/components/Toast';
-import { Save } from 'lucide-react';
+import { useSession } from "next-auth/react";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { useToast } from "@/components/Toast";
+import { Save } from "lucide-react";
 
 export default function EditProfilePage() {
   const { data: session } = useSession();
@@ -13,27 +13,27 @@ export default function EditProfilePage() {
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [formData, setFormData] = useState({
-    name: '',
-    displayName: '',
-    bio: '',
-    timezone: 'Asia/Tokyo',
+    name: "",
+    displayName: "",
+    bio: "",
+    timezone: "Asia/Tokyo",
   });
 
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const response = await fetch('/api/profile');
+        const response = await fetch("/api/profile");
         const data = await response.json();
         if (data.user) {
           setFormData({
-            name: data.user.name || '',
-            displayName: data.user.displayName || '',
-            bio: data.user.bio || '',
-            timezone: data.user.timezone || 'Asia/Tokyo',
+            name: data.user.name || "",
+            displayName: data.user.displayName || "",
+            bio: data.user.bio || "",
+            timezone: data.user.timezone || "Asia/Tokyo",
           });
         }
       } catch (error) {
-        showToast('プロフィール取得失敗', 'error');
+        showToast("プロフィール取得失敗", "error");
       } finally {
         setLoading(false);
       }
@@ -49,30 +49,34 @@ export default function EditProfilePage() {
     setSubmitting(true);
 
     try {
-      const response = await fetch('/api/profile', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+      const response = await fetch("/api/profile", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
       });
 
       const data = await response.json();
 
       if (response.ok) {
-        showToast('プロフィールを更新しました', 'success');
-        router.push('/profile');
+        showToast("プロフィールを更新しました", "success");
+        router.push("/profile");
       } else {
-        showToast(data.error || '更新に失敗しました', 'error');
+        showToast(data.error || "更新に失敗しました", "error");
       }
     } catch (error) {
-      showToast('更新に失敗しました', 'error');
+      showToast("更新に失敗しました", "error");
     } finally {
       setSubmitting(false);
     }
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >
+  ) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   if (!session) {
@@ -88,9 +92,15 @@ export default function EditProfilePage() {
       <h1 className="text-3xl font-bold mb-6 text-transparent bg-clip-text bg-gradient-to-r from-pastel-pink to-pastel-purple">
         プロフィール編集
       </h1>
-      <form onSubmit={handleSubmit} className="bg-white rounded-2xl shadow-lg p-6 space-y-6">
+      <form
+        onSubmit={handleSubmit}
+        className="bg-white rounded-2xl shadow-lg p-6 space-y-6"
+      >
         <div>
-          <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
+          <label
+            htmlFor="name"
+            className="block text-sm font-medium text-gray-700 mb-2"
+          >
             名前 <span className="text-red-500">*</span>
           </label>
           <input
@@ -105,7 +115,10 @@ export default function EditProfilePage() {
         </div>
 
         <div>
-          <label htmlFor="displayName" className="block text-sm font-medium text-gray-700 mb-2">
+          <label
+            htmlFor="displayName"
+            className="block text-sm font-medium text-gray-700 mb-2"
+          >
             表示名
           </label>
           <input
@@ -119,7 +132,10 @@ export default function EditProfilePage() {
         </div>
 
         <div>
-          <label htmlFor="bio" className="block text-sm font-medium text-gray-700 mb-2">
+          <label
+            htmlFor="bio"
+            className="block text-sm font-medium text-gray-700 mb-2"
+          >
             自己紹介
           </label>
           <textarea
@@ -133,7 +149,10 @@ export default function EditProfilePage() {
         </div>
 
         <div>
-          <label htmlFor="timezone" className="block text-sm font-medium text-gray-700 mb-2">
+          <label
+            htmlFor="timezone"
+            className="block text-sm font-medium text-gray-700 mb-2"
+          >
             タイムゾーン
           </label>
           <select
@@ -156,7 +175,7 @@ export default function EditProfilePage() {
             className="flex-1 flex items-center justify-center gap-2 bg-gradient-to-r from-pastel-pink to-pastel-purple text-white font-semibold py-3 rounded-lg hover:opacity-90 transition disabled:opacity-50"
           >
             <Save className="w-5 h-5" />
-            {submitting ? '保存中...' : '保存'}
+            {submitting ? "保存中..." : "保存"}
           </button>
           <button
             type="button"

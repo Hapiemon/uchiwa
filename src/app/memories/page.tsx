@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import { useSession } from 'next-auth/react';
-import { useEffect, useState } from 'react';
-import { useToast } from '@/components/Toast';
-import { Plus, Trash2, Edit2, ExternalLink, Save, X } from 'lucide-react';
+import { useSession } from "next-auth/react";
+import { useEffect, useState } from "react";
+import { useToast } from "@/components/Toast";
+import { Plus, Trash2, Edit2, ExternalLink, Save, X } from "lucide-react";
 
 interface MemoryLink {
   id: string;
@@ -17,8 +17,8 @@ export default function MemoriesPage() {
   const [memories, setMemories] = useState<MemoryLink[]>([]);
   const [loading, setLoading] = useState(true);
   const [editingId, setEditingId] = useState<string | null>(null);
-  const [newMemory, setNewMemory] = useState({ title: '', url: '' });
-  const [editMemory, setEditMemory] = useState({ title: '', url: '' });
+  const [newMemory, setNewMemory] = useState({ title: "", url: "" });
+  const [editMemory, setEditMemory] = useState({ title: "", url: "" });
   const [showAddForm, setShowAddForm] = useState(false);
   const { show: showToast } = useToast();
 
@@ -28,11 +28,11 @@ export default function MemoriesPage() {
 
   const fetchMemories = async () => {
     try {
-      const response = await fetch('/api/memories');
+      const response = await fetch("/api/memories");
       const data = await response.json();
       setMemories(data.memories || []);
     } catch (error) {
-      showToast('読み込み失敗', 'error');
+      showToast("読み込み失敗", "error");
       setMemories([]);
     } finally {
       setLoading(false);
@@ -42,65 +42,65 @@ export default function MemoriesPage() {
   const handleAdd = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newMemory.title.trim() || !newMemory.url.trim()) {
-      showToast('タイトルとURLを入力してください', 'error');
+      showToast("タイトルとURLを入力してください", "error");
       return;
     }
 
     try {
-      const response = await fetch('/api/memories', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const response = await fetch("/api/memories", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(newMemory),
       });
 
-      if (!response.ok) throw new Error('Failed to create');
+      if (!response.ok) throw new Error("Failed to create");
 
       const data = await response.json();
       setMemories([...memories, data.memory]);
-      setNewMemory({ title: '', url: '' });
+      setNewMemory({ title: "", url: "" });
       setShowAddForm(false);
-      showToast('追加しました', 'success');
+      showToast("追加しました", "success");
     } catch (error) {
-      showToast('追加に失敗しました', 'error');
+      showToast("追加に失敗しました", "error");
     }
   };
 
   const handleEdit = async (id: string) => {
     if (!editMemory.title.trim() || !editMemory.url.trim()) {
-      showToast('タイトルとURLを入力してください', 'error');
+      showToast("タイトルとURLを入力してください", "error");
       return;
     }
 
     try {
       const response = await fetch(`/api/memories/${id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(editMemory),
       });
 
-      if (!response.ok) throw new Error('Failed to update');
+      if (!response.ok) throw new Error("Failed to update");
 
       const data = await response.json();
-      setMemories(memories.map(m => m.id === id ? data.memory : m));
+      setMemories(memories.map((m) => (m.id === id ? data.memory : m)));
       setEditingId(null);
-      showToast('更新しました', 'success');
+      showToast("更新しました", "success");
     } catch (error) {
-      showToast('更新に失敗しました', 'error');
+      showToast("更新に失敗しました", "error");
     }
   };
 
   const handleDelete = async (id: string) => {
     try {
       const response = await fetch(`/api/memories/${id}`, {
-        method: 'DELETE',
+        method: "DELETE",
       });
 
-      if (!response.ok) throw new Error('Failed to delete');
+      if (!response.ok) throw new Error("Failed to delete");
 
-      setMemories(memories.filter(m => m.id !== id));
-      showToast('削除しました', 'success');
+      setMemories(memories.filter((m) => m.id !== id));
+      showToast("削除しました", "success");
     } catch (error) {
-      showToast('削除に失敗しました', 'error');
+      showToast("削除に失敗しました", "error");
     }
   };
 
@@ -123,13 +123,20 @@ export default function MemoriesPage() {
           onClick={() => setShowAddForm(!showAddForm)}
           className="bg-pastel-pink text-white px-4 py-2 rounded-lg hover:opacity-90 transition flex items-center gap-2"
         >
-          {showAddForm ? <X className="w-4 h-4" /> : <Plus className="w-4 h-4" />}
-          {showAddForm ? 'キャンセル' : '追加'}
+          {showAddForm ? (
+            <X className="w-4 h-4" />
+          ) : (
+            <Plus className="w-4 h-4" />
+          )}
+          {showAddForm ? "キャンセル" : "追加"}
         </button>
       </div>
 
       {showAddForm && (
-        <form onSubmit={handleAdd} className="bg-white rounded-lg shadow-lg p-6 mb-6">
+        <form
+          onSubmit={handleAdd}
+          className="bg-white rounded-lg shadow-lg p-6 mb-6"
+        >
           <div className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -138,7 +145,9 @@ export default function MemoriesPage() {
               <input
                 type="text"
                 value={newMemory.title}
-                onChange={(e) => setNewMemory({ ...newMemory, title: e.target.value })}
+                onChange={(e) =>
+                  setNewMemory({ ...newMemory, title: e.target.value })
+                }
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pastel-pink focus:border-transparent"
                 placeholder="例: 初デートの写真"
                 required
@@ -151,7 +160,9 @@ export default function MemoriesPage() {
               <input
                 type="url"
                 value={newMemory.url}
-                onChange={(e) => setNewMemory({ ...newMemory, url: e.target.value })}
+                onChange={(e) =>
+                  setNewMemory({ ...newMemory, url: e.target.value })
+                }
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pastel-pink focus:border-transparent"
                 placeholder="https://..."
                 required
@@ -183,13 +194,17 @@ export default function MemoriesPage() {
                   <input
                     type="text"
                     value={editMemory.title}
-                    onChange={(e) => setEditMemory({ ...editMemory, title: e.target.value })}
+                    onChange={(e) =>
+                      setEditMemory({ ...editMemory, title: e.target.value })
+                    }
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pastel-pink focus:border-transparent"
                   />
                   <input
                     type="url"
                     value={editMemory.url}
-                    onChange={(e) => setEditMemory({ ...editMemory, url: e.target.value })}
+                    onChange={(e) =>
+                      setEditMemory({ ...editMemory, url: e.target.value })
+                    }
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pastel-pink focus:border-transparent"
                   />
                   <div className="flex gap-2">
@@ -212,7 +227,9 @@ export default function MemoriesPage() {
               ) : (
                 <div>
                   <div className="flex items-start justify-between mb-3">
-                    <h3 className="text-xl font-semibold text-gray-800">{memory.title}</h3>
+                    <h3 className="text-xl font-semibold text-gray-800">
+                      {memory.title}
+                    </h3>
                     <div className="flex gap-2">
                       <button
                         onClick={() => startEdit(memory)}

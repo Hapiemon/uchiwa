@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import { useSession } from 'next-auth/react';
-import { useEffect, useState } from 'react';
-import Link from 'next/link';
-import { useToast } from '@/components/Toast';
+import { useSession } from "next-auth/react";
+import { useEffect, useState } from "react";
+import Link from "next/link";
+import { useToast } from "@/components/Toast";
 
 export default function ProfilePage() {
   const { data: session } = useSession();
@@ -14,13 +14,13 @@ export default function ProfilePage() {
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const response = await fetch('/api/profile');
+        const response = await fetch("/api/profile");
         const data = await response.json();
         if (data.user) {
           setProfile(data.user);
         }
       } catch (error) {
-        showToast('プロフィール取得失敗', 'error');
+        showToast("プロフィール取得失敗", "error");
       } finally {
         setLoading(false);
       }
@@ -60,7 +60,7 @@ export default function ProfilePage() {
             </div>
             <div>
               <p className="text-sm text-gray-600">表示名</p>
-              <p className="font-semibold">{profile.displayName || '-'}</p>
+              <p className="font-semibold">{profile.displayName || "-"}</p>
             </div>
             <div>
               <p className="text-sm text-gray-600">メール</p>

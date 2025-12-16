@@ -1,10 +1,10 @@
-import type { Metadata } from 'next';
-import { LayoutContent } from '@/components/LayoutContent';
-import '@/styles/globals.css';
+import type { Metadata } from "next";
+import { LayoutContent } from "@/components/LayoutContent";
+import "@/styles/globals.css";
 
 export const metadata: Metadata = {
-  title: 'Uchiwa - かわいいカップル向けWebアプリ',
-  description: 'あなたとの思い出を共有するアプリ',
+  title: "Uchiwa - かわいいカップル向けWebアプリ",
+  description: "あなたとの思い出を共有するアプリ",
 };
 
 export default function RootLayout({
