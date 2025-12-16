@@ -25,7 +25,8 @@ model User {
   updatedAt     DateTime   @updatedAt
 
   // Relations
-  diaryEntries  DiaryEntry[]
+  diaryEntries  DiaryEntry[] @relation(name: "DiaryAuthor")
+  diaryEdits    DiaryEditor[]
   anniversaries Anniversary[]
   conversations ConversationParticipant[]
   messages      Message[]
@@ -36,16 +37,31 @@ model User {
 model DiaryEntry {
   id        String   @id @default(cuid())
   authorId  String
-  author    User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  author    User     @relation(fields: [authorId], references: [id], onDelete: Cascade, name: "DiaryAuthor")
   title     String?
   content   String
   date      DateTime @default(now())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  editors   DiaryEditor[]
 
   @@index([authorId])
   @@index([date])
   @@map("diary_entries")
+}
+
+model DiaryEditor {
+  id           String     @id @default(cuid())
+  diaryEntryId String
+  diaryEntry   DiaryEntry @relation(fields: [diaryEntryId], references: [id], onDelete: Cascade)
+  userId       String
+  user         User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  editedAt     DateTime   @default(now())
+
+  @@unique([diaryEntryId, userId])
+  @@index([diaryEntryId])
+  @@index([userId])
+  @@map("diary_editors")
 }
 
 model Anniversary {

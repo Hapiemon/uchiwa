@@ -124,9 +124,9 @@ export default function ChatRoomPage() {
     : conversation.title || `グループ (${conversation.participants.length}人)`;
 
   return (
-    <div className="flex flex-col h-[calc(100vh-8rem)]">
+    <div className="fixed inset-0 flex flex-col bg-gray-50" style={{ paddingTop: '72px', paddingBottom: '73px' }}>
       {/* ヘッダー */}
-      <div className="bg-white border-b border-gray-200 px-4 py-3 flex items-center gap-3 sticky top-0 z-10">
+      <div className="bg-white border-b border-gray-200 px-4 py-3 flex items-center gap-3 flex-shrink-0">
         <button
           onClick={() => router.back()}
           className="text-gray-600 hover:text-gray-800"
@@ -145,7 +145,7 @@ export default function ChatRoomPage() {
       </div>
 
       {/* メッセージリスト */}
-      <div className="flex-1 overflow-y-auto px-4 py-4 space-y-4 bg-gray-50">
+      <div className="flex-1 overflow-y-auto px-4 py-4 space-y-4">
         {messages.length === 0 ? (
           <div className="text-center py-8 text-gray-500">
             メッセージがまだありません
@@ -210,7 +210,7 @@ export default function ChatRoomPage() {
       {/* 入力フォーム */}
       <form
         onSubmit={handleSend}
-        className="bg-white border-t border-gray-200 px-4 py-3 flex items-center gap-2 sticky bottom-0"
+        className="bg-white border-t border-gray-200 px-4 py-3 flex items-center gap-2 flex-shrink-0"
       >
         <input
           type="text"

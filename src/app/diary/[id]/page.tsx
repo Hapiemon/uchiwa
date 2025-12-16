@@ -192,6 +192,22 @@ export default function DiaryDetailPage() {
             {entry.title && (
               <h2 className="text-2xl font-bold text-gray-800 mb-3">{entry.title}</h2>
             )}
+            
+            {/* 作成者と編集者の表示 */}
+            <div className="flex flex-wrap gap-2 text-xs text-gray-500 mb-3">
+              <span className="px-2 py-1 bg-pastel-pink/10 text-pastel-pink rounded-full">
+                作成: {(entry as any).author?.displayName || (entry as any).author?.name || '不明'}
+              </span>
+              {(entry as any).editors && (entry as any).editors.length > 0 && (
+                <>
+                  {(entry as any).editors.map((editor: any, index: number) => (
+                    <span key={index} className="px-2 py-1 bg-pastel-purple/10 text-pastel-purple rounded-full">
+                      編集: {editor.user?.displayName || editor.user?.name || '不明'}
+                    </span>
+                  ))}
+                </>
+              )}
+            </div>
           </div>
           
           <p className="whitespace-pre-wrap text-gray-800 mb-6 leading-relaxed">

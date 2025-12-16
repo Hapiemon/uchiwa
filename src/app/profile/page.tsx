@@ -4,7 +4,6 @@ import { useSession } from 'next-auth/react';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useToast } from '@/components/Toast';
-import { Youtube, Image } from 'lucide-react';
 
 export default function ProfilePage() {
   const { data: session } = useSession();
@@ -78,46 +77,6 @@ export default function ProfilePage() {
               <p className="font-semibold">{profile.bio}</p>
             </div>
           )}
-          
-          {/* メディアリンクセクション */}
-          <div className="border-t pt-4">
-            <p className="text-sm font-semibold text-gray-700 mb-3">思い出のリンク</p>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-              {profile.youtubeUrl ? (
-                <a
-                  href={profile.youtubeUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-2 p-3 bg-gradient-to-r from-red-50 to-red-100 rounded-lg hover:from-red-100 hover:to-red-200 transition"
-                >
-                  <Youtube className="w-5 h-5 text-red-600" />
-                  <span className="text-sm font-medium text-red-700">YouTube動画</span>
-                </a>
-              ) : (
-                <div className="flex items-center gap-2 p-3 bg-gray-50 rounded-lg text-gray-400">
-                  <Youtube className="w-5 h-5" />
-                  <span className="text-sm">未設定</span>
-                </div>
-              )}
-              
-              {profile.googlePhotosUrl ? (
-                <a
-                  href={profile.googlePhotosUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-2 p-3 bg-gradient-to-r from-blue-50 to-blue-100 rounded-lg hover:from-blue-100 hover:to-blue-200 transition"
-                >
-                  <Image className="w-5 h-5 text-blue-600" />
-                  <span className="text-sm font-medium text-blue-700">Google Photos</span>
-                </a>
-              ) : (
-                <div className="flex items-center gap-2 p-3 bg-gray-50 rounded-lg text-gray-400">
-                  <Image className="w-5 h-5" />
-                  <span className="text-sm">未設定</span>
-                </div>
-              )}
-            </div>
-          </div>
 
           <Link
             href="/profile/edit"

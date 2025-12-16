@@ -18,7 +18,6 @@ export async function GET(req: NextRequest) {
 
     const entries = await prisma.diaryEntry.findMany({
       where: {
-        authorId: session.user.id,
         OR: [
           { content: { contains: search } },
           { title: { contains: search } }
@@ -34,12 +33,33 @@ export async function GET(req: NextRequest) {
         date: true,
         createdAt: true,
         updatedAt: true,
+        author: {
+          select: {
+            id: true,
+            displayName: true,
+            name: true,
+          },
+        },
+        editors: {
+          select: {
+            user: {
+              select: {
+                id: true,
+                displayName: true,
+                name: true,
+              },
+            },
+            editedAt: true,
+          },
+          orderBy: {
+            editedAt: 'desc',
+          },
+        },
       },
     });
 
     const total = await prisma.diaryEntry.count({
       where: {
-        authorId: session.user.id,
         OR: [
           { content: { contains: search } },
           { title: { contains: search } }

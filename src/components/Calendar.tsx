@@ -10,7 +10,14 @@ interface CalendarDay {
 }
 
 interface CalendarProps {
-  entries: Array<{ id: string; date: Date; title?: string; content: string }>;
+  entries: Array<{ 
+    id: string; 
+    date: Date; 
+    title?: string; 
+    content: string;
+    author?: { id: string; displayName?: string; name: string; };
+    editors?: Array<{ user: { id: string; displayName?: string; name: string; }; editedAt: string; }>;
+  }>;
   onDateClick: (date: Date) => void;
   onDateWithEntryClick: (entryId: string) => void;
 }

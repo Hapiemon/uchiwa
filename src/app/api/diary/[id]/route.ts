@@ -24,15 +24,33 @@ export async function GET(
         date: true,
         createdAt: true,
         updatedAt: true,
+        author: {
+          select: {
+            id: true,
+            displayName: true,
+            name: true,
+          },
+        },
+        editors: {
+          select: {
+            user: {
+              select: {
+                id: true,
+                displayName: true,
+                name: true,
+              },
+            },
+            editedAt: true,
+          },
+          orderBy: {
+            editedAt: 'desc',
+          },
+        },
       },
     });
 
     if (!entry) {
       return NextResponse.json({ error: 'Not found' }, { status: 404 });
-    }
-
-    if (entry.authorId !== session.user.id) {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
     return NextResponse.json({ entry });
@@ -67,16 +85,15 @@ export async function PUT(
 
     const entry = await prisma.diaryEntry.findUnique({
       where: { id: params.id },
-      select: { authorId: true },
+      select: { id: true, authorId: true },
     });
 
     if (!entry) {
       return NextResponse.json({ error: 'Not found' }, { status: 404 });
     }
 
-    if (entry.authorId !== session.user.id) {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
-    }
+    // 作成者以外が編集する場合、編集者として記録
+    const isAuthor = entry.authorId === session.user.id;
 
     const updated = await prisma.diaryEntry.update({
       where: { id: params.id },
@@ -84,6 +101,22 @@ export async function PUT(
         title: parsed.data.title,
         content: parsed.data.content,
         date: parsed.data.date ? new Date(parsed.data.date) : undefined,
+        editors: !isAuthor ? {
+          upsert: {
+            where: {
+              diaryEntryId_userId: {
+                diaryEntryId: params.id,
+                userId: session.user.id,
+              },
+            },
+            create: {
+              userId: session.user.id,
+            },
+            update: {
+              editedAt: new Date(),
+            },
+          },
+        } : undefined,
       },
       select: {
         id: true,
@@ -92,6 +125,28 @@ export async function PUT(
         date: true,
         createdAt: true,
         updatedAt: true,
+        author: {
+          select: {
+            id: true,
+            displayName: true,
+            name: true,
+          },
+        },
+        editors: {
+          select: {
+            user: {
+              select: {
+                id: true,
+                displayName: true,
+                name: true,
+              },
+            },
+            editedAt: true,
+          },
+          orderBy: {
+            editedAt: 'desc',
+          },
+        },
       },
     });
 
@@ -113,19 +168,6 @@ export async function DELETE(
     const session = await getServerSession(authOptions);
     if (!session?.user?.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    const entry = await prisma.diaryEntry.findUnique({
-      where: { id: params.id },
-      select: { authorId: true },
-    });
-
-    if (!entry) {
-      return NextResponse.json({ error: 'Not found' }, { status: 404 });
-    }
-
-    if (entry.authorId !== session.user.id) {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
     await prisma.diaryEntry.delete({
