@@ -175,7 +175,6 @@ export default function Calendar({
                 ${
                   today ? "border-pastel-pink bg-pink-50" : "border-transparent"
                 }
-                ${day.hasEntry ? "bg-pastel-mint border-pastel-mint" : ""}
                 ${!day.isCurrentMonth ? "text-gray-400" : "text-gray-800"}
                 hover:border-pastel-purple hover:shadow-md
               `}
@@ -202,10 +201,6 @@ export default function Calendar({
         <div className="flex items-center gap-2">
           <div className="w-4 h-4 rounded border-2 border-pastel-pink bg-pink-50"></div>
           <span>今日</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <div className="w-4 h-4 rounded bg-pastel-mint"></div>
-          <span>日記あり</span>
         </div>
       </div>
     </div>

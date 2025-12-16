@@ -21,7 +21,9 @@ export const profileUpdateSchema = z.object({
 export const diaryEntrySchema = z.object({
   title: z.string().max(200).optional().nullable(),
   content: z.string().min(1, "Content cannot be empty").max(10000),
-  date: z.string().optional(),
+  date: z.string().optional().refine((val) => !val || !isNaN(Date.parse(val)), {
+    message: "Invalid date",
+  }),
 });
 
 export const anniversarySchema = z.object({

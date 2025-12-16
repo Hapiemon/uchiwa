@@ -15,7 +15,6 @@ export function Header() {
           className="flex items-center gap-2 font-bold text-2xl text-white"
         >
           <Heart className="w-6 h-6" />
-          Uchiwa
         </Link>
         <div className="flex items-center gap-4">
           {session && (

@@ -35,24 +35,33 @@ function CreateDiaryForm() {
     setSubmitting(true);
     
     try {
+      const requestBody = { 
+        title: title.trim() || null,
+        content: content.trim(),
+        date: new Date(date).toISOString()
+      };
+      
+      console.log('Creating diary with data:', requestBody);
+      
       const response = await fetch('/api/diary', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-          title: title.trim() || null,
-          content: content.trim(),
-          date: new Date(date).toISOString()
-        }),
+        body: JSON.stringify(requestBody),
       });
 
+      const data = await response.json();
+      console.log('Response:', { status: response.status, data });
+
       if (!response.ok) {
-        throw new Error('Failed to create diary entry');
+        console.error('Diary creation error:', data);
+        throw new Error(data.error || 'Failed to create diary entry');
       }
 
       showToast('日記が作成されました', 'success');
       router.push('/diary');
     } catch (error) {
-      showToast('作成失敗', 'error');
+      console.error('Error creating diary:', error);
+      showToast(error instanceof Error ? error.message : '作成失敗', 'error');
     } finally {
       setSubmitting(false);
     }
