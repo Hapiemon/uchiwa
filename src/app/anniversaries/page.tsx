@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { AnniversaryCard } from '@/components/AnniversaryCard';
 import { useToast } from '@/components/Toast';
-import { Trash2 } from 'lucide-react';
+import { Trash2, Edit } from 'lucide-react';
 import type { Anniversary } from '@/types';
 
 export default function AnniversariesPage() {
@@ -75,12 +75,20 @@ export default function AnniversariesPage() {
                 anniversary={anniversary}
                 userTimezone={(session.user as any)?.timezone || 'Asia/Tokyo'}
               />
-              <button
-                onClick={() => handleDelete(anniversary.id)}
-                className="absolute top-4 right-4 text-white hover:opacity-75 transition"
-              >
-                <Trash2 className="w-5 h-5" />
-              </button>
+              <div className="absolute top-4 right-4 flex gap-2">
+                <Link
+                  href={`/anniversaries/edit/${anniversary.id}`}
+                  className="text-white hover:opacity-75 transition bg-black bg-opacity-20 p-2 rounded-lg"
+                >
+                  <Edit className="w-5 h-5" />
+                </Link>
+                <button
+                  onClick={() => handleDelete(anniversary.id)}
+                  className="text-white hover:opacity-75 transition bg-black bg-opacity-20 p-2 rounded-lg"
+                >
+                  <Trash2 className="w-5 h-5" />
+                </button>
+              </div>
             </div>
           ))}
         </div>

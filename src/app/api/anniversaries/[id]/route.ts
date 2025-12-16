@@ -18,7 +18,6 @@ export async function GET(
       where: { id: params.id },
       select: {
         id: true,
-        userId: true,
         title: true,
         date: true,
         repeatInterval: true,
@@ -29,10 +28,6 @@ export async function GET(
 
     if (!anniversary) {
       return NextResponse.json({ error: 'Not found' }, { status: 404 });
-    }
-
-    if (anniversary.userId !== session.user.id) {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
     return NextResponse.json({ anniversary });
@@ -63,19 +58,6 @@ export async function PUT(
         { error: 'Invalid input', details: parsed.error.errors },
         { status: 400 }
       );
-    }
-
-    const anniversary = await prisma.anniversary.findUnique({
-      where: { id: params.id },
-      select: { userId: true },
-    });
-
-    if (!anniversary) {
-      return NextResponse.json({ error: 'Not found' }, { status: 404 });
-    }
-
-    if (anniversary.userId !== session.user.id) {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
     const updated = await prisma.anniversary.update({
@@ -114,19 +96,6 @@ export async function DELETE(
     const session = await getServerSession(authOptions);
     if (!session?.user?.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    const anniversary = await prisma.anniversary.findUnique({
-      where: { id: params.id },
-      select: { userId: true },
-    });
-
-    if (!anniversary) {
-      return NextResponse.json({ error: 'Not found' }, { status: 404 });
-    }
-
-    if (anniversary.userId !== session.user.id) {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
     await prisma.anniversary.delete({

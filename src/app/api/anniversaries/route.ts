@@ -12,7 +12,6 @@ export async function GET(req: NextRequest) {
     }
 
     const anniversaries = await prisma.anniversary.findMany({
-      where: { userId: session.user.id },
       orderBy: { date: 'asc' },
       select: {
         id: true,
@@ -53,7 +52,7 @@ export async function POST(req: NextRequest) {
 
     const anniversary = await prisma.anniversary.create({
       data: {
-        userId: session.user.id,
+        userId: null,
         title: parsed.data.title,
         date: new Date(parsed.data.date),
         repeatInterval: parsed.data.repeatInterval,

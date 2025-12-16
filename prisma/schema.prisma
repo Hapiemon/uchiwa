@@ -64,8 +64,8 @@ model DiaryEditor {
 
 model Anniversary {
   id             String   @id @default(cuid())
-  userId         String
-  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId         String?
+  user           User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
   title          String
   date           DateTime
   repeatInterval String   @default("NONE") // NONE, WEEKLY, MONTHLY, YEARLY
