@@ -23,116 +23,105 @@ export async function GET(request: NextRequest) {
     const currentMonth = today.getMonth() + 1;
     const currentDay = today.getDate();
 
-    // 今日が記念日のユーザーを取得
+    // 今日の記念日を全て取得（全ユーザー共有）
     const anniversariesToday = await prisma.anniversary.findMany({
       where: {
-        OR: [
-          // 記念日が今日
-          {
-            date: {
-              gte: new Date(currentYear, currentMonth - 1, currentDay, 0, 0, 0),
-              lt: new Date(
-                currentYear,
-                currentMonth - 1,
-                currentDay + 1,
-                0,
-                0,
-                0
-              ),
-            },
-          },
-        ],
-      },
-      include: {
-        user: {
-          select: {
-            id: true,
-            name: true,
-            notificationEmails: true,
-            emailNotificationsEnabled: true,
-          },
+        date: {
+          gte: new Date(currentYear, currentMonth - 1, currentDay, 0, 0, 0),
+          lt: new Date(
+            currentYear,
+            currentMonth - 1,
+            currentDay + 1,
+            0,
+            0,
+            0
+          ),
         },
+      },
+    });
+
+    // メール通知を有効にしている全ユーザーを取得
+    const usersWithNotifications = await prisma.user.findMany({
+      where: {
+        emailNotificationsEnabled: true,
+        notificationEmails: {
+          isEmpty: false,
+        },
+      },
+      select: {
+        id: true,
+        name: true,
+        notificationEmails: true,
+        emailNotificationsEnabled: true,
       },
     });
 
     const results = [];
 
     console.log(`Found ${anniversariesToday.length} anniversaries today`);
+    console.log(`Found ${usersWithNotifications.length} users with notifications enabled`);
     console.log(`Checking at date: ${today.toISOString()}`);
     console.log(`Current timezone info: Year=${currentYear}, Month=${currentMonth}, Day=${currentDay}`);
 
-    for (const anniversary of anniversariesToday) {
-      const user = anniversary.user;
-
-      console.log(`\n=== Checking anniversary: ${anniversary.title} ===`);
-      console.log(`Anniversary date: ${anniversary.date}`);
-      console.log(`User info:`, {
-        userId: user?.id,
-        userName: user?.name,
-        emailNotificationsEnabled: user?.emailNotificationsEnabled,
-        notificationEmails: user?.notificationEmails,
-        notificationEmailsCount: user?.notificationEmails?.length || 0,
+    // 記念日がない場合は終了
+    if (anniversariesToday.length === 0) {
+      return NextResponse.json({
+        success: true,
+        date: today.toISOString(),
+        checked: 0,
+        sent: 0,
+        failed: 0,
+        results: [],
+        message: "No anniversaries today",
       });
+    }
 
-      // ユーザーが存在するかチェック
-      if (!user) {
-        console.warn(`❌ User not found for anniversary ${anniversary.id}`);
-        results.push({
-          anniversaryId: anniversary.id,
-          status: "error",
-          reason: "User not found",
-        });
-        continue;
-      }
+    // 通知を有効にしているユーザーがいない場合は終了
+    if (usersWithNotifications.length === 0) {
+      return NextResponse.json({
+        success: true,
+        date: today.toISOString(),
+        checked: anniversariesToday.length,
+        sent: 0,
+        failed: 0,
+        results: [],
+        message: "No users with notifications enabled",
+      });
+    }
 
-      // メール通知が有効で、通知先メールアドレスが設定されているか確認
-      if (
-        !user.emailNotificationsEnabled ||
-        !user.notificationEmails ||
-        user.notificationEmails.length === 0
-      ) {
-        const reason = !user.emailNotificationsEnabled 
-          ? "Email notifications disabled"
-          : !user.notificationEmails || user.notificationEmails.length === 0
-          ? "No notification emails configured"
-          : "Unknown reason";
-        
-        console.log(
-          `⚠️ Skipping: emailNotificationsEnabled=${
-            user.emailNotificationsEnabled
-          }, notificationEmails=${JSON.stringify(user.notificationEmails)}, count=${user.notificationEmails?.length || 0}`
-        );
-        console.log(`Reason: ${reason}`);
-        
-        results.push({
-          userId: user.id,
-          anniversaryId: anniversary.id,
-          status: "skipped",
-          reason: reason,
-        });
-        continue;
-      }
+    // 各ユーザーに今日の記念日をメール送信
+    for (const user of usersWithNotifications) {
+      console.log(`\n=== Sending to user: ${user.name} ===`);
+      console.log(`User emails: ${user.notificationEmails.join(", ")}`);
 
-      console.log(`✉️ Attempting to send email to: ${user.notificationEmails.join(", ")}`);
+      // 記念日リストを生成
+      const anniversaryList = anniversariesToday
+        .map(
+          (ann) => `
+        <li style="margin-bottom: 15px;">
+          <strong style="color: #ec4899; font-size: 16px;">${ann.title}</strong>
+          ${ann.notes ? `<p style="margin: 5px 0 0 0; color: #6b7280;">${ann.notes}</p>` : ""}
+        </li>
+      `
+        )
+        .join("");
 
       try {
-        // メール送信（複数の宛先に送信）
+        // メール送信
         const { data, error } = await resend.emails.send({
           from: "onboarding@resend.dev", // Resend無料プラン用。本番運用時は自分のドメインに変更
           to: user.notificationEmails,
-          subject: `🎉 今日は「${anniversary.title}」の日です！`,
+          subject: `🎉 今日は記念日です！（${anniversariesToday.length}件）`,
           html: `
             <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
               <h1 style="color: #ec4899;">🎉 記念日のお知らせ</h1>
               <p>こんにちは、${user.name}さん</p>
-              <p style="font-size: 18px; font-weight: bold; color: #ec4899;">
-                今日は「${anniversary.title}」の日です！
+              <p style="font-size: 18px; font-weight: bold; color: #ec4899; margin-top: 20px;">
+                今日は${anniversariesToday.length}件の記念日です！
               </p>
-              ${
-                anniversary.notes
-                  ? `<p>${anniversary.notes}</p>`
-                  : ""
-              }
+              <ul style="list-style: none; padding: 0; margin: 20px 0;">
+                ${anniversaryList}
+              </ul>
               <p style="margin-top: 30px;">
                 素敵な一日をお過ごしください💖
               </p>
@@ -151,28 +140,24 @@ export async function GET(request: NextRequest) {
           );
           results.push({
             userId: user.id,
-            anniversaryId: anniversary.id,
             status: "error",
             error: error.message,
           });
         } else {
           console.log(
-            `Email sent to ${user.notificationEmails.join(
-              ", "
-            )} for anniversary: ${anniversary.title}`
+            `✅ Email sent to ${user.notificationEmails.join(", ")}`
           );
           results.push({
             userId: user.id,
-            anniversaryId: anniversary.id,
             status: "sent",
             emailId: data?.id,
+            anniversaryCount: anniversariesToday.length,
           });
         }
       } catch (emailError: any) {
-        console.error(`Error sending email:`, emailError);
+        console.error(`Error sending email to ${user.name}:`, emailError);
         results.push({
           userId: user.id,
-          anniversaryId: anniversary.id,
           status: "error",
           error: emailError.message,
         });
@@ -182,7 +167,8 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({
       success: true,
       date: today.toISOString(),
-      checked: anniversariesToday.length,
+      anniversariesFound: anniversariesToday.length,
+      usersNotified: usersWithNotifications.length,
       sent: results.filter((r) => r.status === "sent").length,
       failed: results.filter((r) => r.status === "error").length,
       results,
