@@ -23,18 +23,20 @@ export async function GET(request: NextRequest) {
 
     // Use JST (Asia/Tokyo) for date calculation
     const today = new Date();
-    const formatter = new Intl.DateTimeFormat('ja-JP', {
-      timeZone: 'Asia/Tokyo',
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
+    const formatter = new Intl.DateTimeFormat("ja-JP", {
+      timeZone: "Asia/Tokyo",
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
     });
     const jstDateStr = formatter.format(today);
-    const [year, month, day] = jstDateStr.split('/').map(Number);
+    const [year, month, day] = jstDateStr.split("/").map(Number);
 
     console.log(`[DEBUG] Server current date (UTC): ${today.toISOString()}`);
     console.log(`[DEBUG] JST current date: ${year}-${month}-${day}`);
-    console.log(`[DEBUG] Checking for year: ${year}, month: ${month}, day: ${day}`);
+    console.log(
+      `[DEBUG] Checking for year: ${year}, month: ${month}, day: ${day}`
+    );
 
     // 記念日は月日のみで比較（年は無視）
     const anniversariesToday = await prisma.anniversary.findMany({
@@ -46,17 +48,21 @@ export async function GET(request: NextRequest) {
       },
     });
 
-    console.log(`[DEBUG] Total anniversaries in DB: ${anniversariesToday.length}`);
+    console.log(
+      `[DEBUG] Total anniversaries in DB: ${anniversariesToday.length}`
+    );
 
     // 月日が一致する記念日をフィルター
     const filteredAnniversaries = anniversariesToday.filter((ann) => {
       const annDate = new Date(ann.date);
       const annMonth = annDate.getUTCMonth() + 1;
       const annDay = annDate.getUTCDate();
-      
+
       const isMatch = annMonth === month && annDay === day;
-      console.log(`[DEBUG] Anniversary: ${ann.title}, DB date: ${ann.date}, Match: ${isMatch} (month: ${annMonth}/${month}, day: ${annDay}/${day})`);
-      
+      console.log(
+        `[DEBUG] Anniversary: ${ann.title}, DB date: ${ann.date}, Match: ${isMatch} (month: ${annMonth}/${month}, day: ${annDay}/${day})`
+      );
+
       return isMatch;
     });
 
@@ -79,7 +85,9 @@ export async function GET(request: NextRequest) {
     const results = [];
 
     console.log(`Found ${filteredAnniversaries.length} anniversaries today`);
-    console.log(`Found ${usersWithNotifications.length} users with notifications enabled`);
+    console.log(
+      `Found ${usersWithNotifications.length} users with notifications enabled`
+    );
 
     // 記念日がない場合は終了
     if (filteredAnniversaries.length === 0) {
@@ -118,13 +126,34 @@ export async function GET(request: NextRequest) {
           (ann) => `
         <li style="margin-bottom: 15px;">
           <strong style="color: #ec4899; font-size: 16px;">${ann.title}</strong>
-          ${ann.notes ? `<p style="margin: 5px 0 0 0; color: #6b7280;">${ann.notes}</p>` : ""}
+          ${
+            ann.notes
+              ? `<p style="margin: 5px 0 0 0; color: #6b7280;">${ann.notes}</p>`
+              : ""
+          }
         </li>
       `
         )
         .join("");
 
       try {
+        // 通知先メールアドレスに対応するユーザー名を取得
+        const recipientUsers = await prisma.user.findMany({
+          where: {
+            email: {
+              in: user.notificationEmails,
+            },
+          },
+          select: {
+            name: true,
+            displayName: true,
+          },
+        });
+
+        const recipientNames = recipientUsers
+          .map((u) => u.displayName || u.name)
+          .join("さん、");
+
         // メール送信
         const { data, error } = await resend.emails.send({
           from: FROM_EMAIL,
@@ -133,7 +162,7 @@ export async function GET(request: NextRequest) {
           html: `
             <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
               <h1 style="color: #ec4899;">🎉 記念日のお知らせ</h1>
-              <p>こんにちは！${usersWithNotifications.map(u => u.name).join('さん、')}さん！</p>
+              <p>こんにちは！${recipientNames}さん！</p>
               <p style="font-size: 18px; font-weight: bold; color: #ec4899; margin-top: 20px;">
                 今日は${filteredAnniversaries.length}件の記念日です！
               </p>
@@ -162,9 +191,7 @@ export async function GET(request: NextRequest) {
             error: error.message,
           });
         } else {
-          console.log(
-            `✅ Email sent to ${user.notificationEmails.join(", ")}`
-          );
+          console.log(`✅ Email sent to ${user.notificationEmails.join(", ")}`);
           results.push({
             userId: user.id,
             status: "sent",
