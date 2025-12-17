@@ -4,14 +4,14 @@
 
 ## ✨ 機能概要
 
-- 📅 記念日当日の午前9時（日本時間）に自動でメール通知
+- 📅 記念日当日の午前 9 時（日本時間）に自動でメール通知
 - ⚙️ `/settings` ページから通知先メールアドレスを設定可能
-- 🔔 通知のON/OFF切り替え
-- 🔒 セキュアなAPI認証（GitHub ActionsとAPI間）
+- 🔔 通知の ON/OFF 切り替え
+- 🔒 セキュアな API 認証（GitHub Actions と API 間）
 
 ## 🛠️ セットアップ手順
 
-### 1. Resend APIキーの取得
+### 1. Resend API キーの取得
 
 1. [Resend](https://resend.com/)にサインアップ
 2. Dashboard > API Keys で新しいキーを作成
@@ -35,9 +35,9 @@ RESEND_API_KEY=re_xxxxxxxxxx
 CRON_SECRET=<openssl rand -base64 32で生成>
 ```
 
-### 3. GitHub Secretsの設定
+### 3. GitHub Secrets の設定
 
-GitHubリポジトリ > Settings > Secrets and variables > Actions:
+GitHub リポジトリ > Settings > Secrets and variables > Actions:
 
 ```bash
 CRON_SECRET=<Vercelと同じ値>
@@ -46,9 +46,10 @@ APP_URL=https://your-app.vercel.app
 
 ### 4. ドメイン認証（本番のみ）
 
-Resendで独自ドメインを認証（無料プランでも可能）:
+Resend で独自ドメインを認証（無料プランでも可能）:
+
 1. Resend Console > Domains
-2. ドメインを追加してDNSレコードを設定
+2. ドメインを追加して DNS レコードを設定
 3. `/api/cron/check-anniversaries`の`from`を`notifications@your-domain.com`に変更
 
 **テスト用:** `onboarding@resend.dev`が使えます（制限あり）
@@ -64,7 +65,7 @@ Resendで独自ドメインを認証（無料プランでも可能）:
 
 ### 管理者側（テスト）
 
-ローカルでCronジョブをテスト:
+ローカルで Cron ジョブをテスト:
 
 ```bash
 curl -X GET \
@@ -74,10 +75,10 @@ curl -X GET \
 
 ## 🔄 動作の仕組み
 
-1. **GitHub Actions** が毎日午前9時（JST）に実行
+1. **GitHub Actions** が毎日午前 9 時（JST）に実行
 2. `/api/cron/check-anniversaries` にリクエスト
 3. その日が記念日のユーザーを検索
-4. メール通知が有効なユーザーにResend経由でメール送信
+4. メール通知が有効なユーザーに Resend 経由でメール送信
 
 ## 📁 ファイル構成
 
@@ -104,15 +105,15 @@ src/
 
 ### メールが届かない
 
-1. Vercelの環境変数を確認
-2. GitHub Secretsを確認
+1. Vercel の環境変数を確認
+2. GitHub Secrets を確認
 3. `/settings`で通知が有効か確認
-4. Resendダッシュボードでログを確認
+4. Resend ダッシュボードでログを確認
 
-### GitHub Actionsが動かない
+### GitHub Actions が動かない
 
 1. `.github/workflows/daily-reminder.yml`が正しくコミットされているか確認
-2. GitHub Secretsが設定されているか確認
+2. GitHub Secrets が設定されているか確認
 3. Actions タブでワークフローの実行履歴を確認
 
 ### ローカルテストでエラー
@@ -122,16 +123,16 @@ src/
 
 ## 📊 制限事項
 
-- **Resend無料プラン:** 月3,000通まで
-- **GitHub Actions:** 月2,000分まで（このワークフローは数秒で完了）
-- **通知時間:** 毎日午前9時（JST）固定
+- **Resend 無料プラン:** 月 3,000 通まで
+- **GitHub Actions:** 月 2,000 分まで（このワークフローは数秒で完了）
+- **通知時間:** 毎日午前 9 時（JST）固定
 
 ## 🔜 今後の拡張案
 
-- [ ] 通知タイミングのカスタマイズ（3日前、1週間前など）
+- [ ] 通知タイミングのカスタマイズ（3 日前、1 週間前など）
 - [ ] メールテンプレートのカスタマイズ
 - [ ] 複数の通知先アドレス
-- [ ] SMS通知（Twilio連携）
+- [ ] SMS 通知（Twilio 連携）
 
 ---
 
