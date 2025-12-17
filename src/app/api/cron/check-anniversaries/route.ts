@@ -105,8 +105,8 @@ export async function GET(request: NextRequest) {
                 今日は「${anniversary.title}」の日です！
               </p>
               ${
-                anniversary.description
-                  ? `<p>${anniversary.description}</p>`
+                anniversary.notes
+                  ? `<p>${anniversary.notes}</p>`
                   : ""
               }
               <p style="margin-top: 30px;">
