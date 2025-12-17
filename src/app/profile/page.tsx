@@ -74,7 +74,9 @@ export default function ProfilePage() {
           {profile.bio && (
             <div>
               <p className="text-sm text-gray-600">自己紹介</p>
-              <p className="font-semibold">{profile.bio}</p>
+              <p className="font-semibold whitespace-pre-wrap break-words">
+                {profile.bio}
+              </p>
             </div>
           )}
 
