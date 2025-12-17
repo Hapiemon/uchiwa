@@ -30,12 +30,16 @@ export async function GET(request: NextRequest) {
       day: "2-digit",
     });
     const jstDateStr = formatter.format(today);
+    const jstNow = new Date(
+      today.toLocaleString("en-US", { timeZone: "Asia/Tokyo" })
+    );
     const [year, month, day] = jstDateStr.split("/").map(Number);
+    const jstDayOfWeek = jstNow.getDay();
 
     console.log(`[DEBUG] Server current date (UTC): ${today.toISOString()}`);
     console.log(`[DEBUG] JST current date: ${year}-${month}-${day}`);
     console.log(
-      `[DEBUG] Checking for year: ${year}, month: ${month}, day: ${day}`
+      `[DEBUG] Checking for year: ${year}, month: ${month}, day: ${day}, weekday: ${jstDayOfWeek}`
     );
 
     // 記念日は月日のみで比較（年は無視）
@@ -44,6 +48,7 @@ export async function GET(request: NextRequest) {
         id: true,
         title: true,
         date: true,
+        repeatInterval: true,
         notes: true,
       },
     });
@@ -57,10 +62,30 @@ export async function GET(request: NextRequest) {
       const annDate = new Date(ann.date);
       const annMonth = annDate.getUTCMonth() + 1;
       const annDay = annDate.getUTCDate();
+      const annDayOfWeek = annDate.getUTCDay();
 
-      const isMatch = annMonth === month && annDay === day;
+      let isMatch = false;
+      switch (ann.repeatInterval) {
+        case "WEEKLY":
+          isMatch = annDayOfWeek === jstDayOfWeek;
+          break;
+        case "MONTHLY":
+          isMatch = annDay === day;
+          break;
+        case "YEARLY":
+          isMatch = annMonth === month && annDay === day;
+          break;
+        default:
+          // NONE: 年月日がすべて一致する場合のみ
+          isMatch =
+            annMonth === month &&
+            annDay === day &&
+            annDate.getUTCFullYear() === year;
+          break;
+      }
+
       console.log(
-        `[DEBUG] Anniversary: ${ann.title}, DB date: ${ann.date}, Match: ${isMatch} (month: ${annMonth}/${month}, day: ${annDay}/${day})`
+        `[DEBUG] Anniversary: ${ann.title}, DB date: ${ann.date}, repeat: ${ann.repeatInterval}, Match: ${isMatch} (ann: ${annMonth}/${annDay} w=${annDayOfWeek}, today: ${month}/${day} w=${jstDayOfWeek})`
       );
 
       return isMatch;
