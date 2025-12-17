@@ -185,6 +185,8 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({
       success: true,
       date: today.toISOString(),
+      jstDate: `${year}-${month}-${day}`,
+      jstDateFormatted: jstDateStr,
       anniversariesFound: filteredAnniversaries.length,
       usersNotified: usersWithNotifications.length,
       sent: results.filter((r) => r.status === "sent").length,
