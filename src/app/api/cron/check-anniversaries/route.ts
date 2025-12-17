@@ -133,7 +133,7 @@ export async function GET(request: NextRequest) {
           html: `
             <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
               <h1 style="color: #ec4899;">🎉 記念日のお知らせ</h1>
-              <p>こんにちは、${user.name}さん</p>
+              <p>こんにちは！${usersWithNotifications.map(u => u.name).join('さん、')}さん！</p>
               <p style="font-size: 18px; font-weight: bold; color: #ec4899; margin-top: 20px;">
                 今日は${filteredAnniversaries.length}件の記念日です！
               </p>
