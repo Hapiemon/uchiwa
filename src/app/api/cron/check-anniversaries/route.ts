@@ -58,20 +58,30 @@ export async function GET(request: NextRequest) {
     const results = [];
 
     console.log(`Found ${anniversariesToday.length} anniversaries today`);
+    console.log(`Checking at date: ${today.toISOString()}`);
+    console.log(`Current timezone info: Year=${currentYear}, Month=${currentMonth}, Day=${currentDay}`);
 
     for (const anniversary of anniversariesToday) {
       const user = anniversary.user;
 
-      console.log(`Checking anniversary: ${anniversary.title} for user:`, {
+      console.log(`\n=== Checking anniversary: ${anniversary.title} ===`);
+      console.log(`Anniversary date: ${anniversary.date}`);
+      console.log(`User info:`, {
         userId: user?.id,
         userName: user?.name,
         emailNotificationsEnabled: user?.emailNotificationsEnabled,
         notificationEmails: user?.notificationEmails,
+        notificationEmailsCount: user?.notificationEmails?.length || 0,
       });
 
       // ユーザーが存在するかチェック
       if (!user) {
-        console.warn(`User not found for anniversary ${anniversary.id}`);
+        console.warn(`❌ User not found for anniversary ${anniversary.id}`);
+        results.push({
+          anniversaryId: anniversary.id,
+          status: "error",
+          reason: "User not found",
+        });
         continue;
       }
 
@@ -81,15 +91,29 @@ export async function GET(request: NextRequest) {
         !user.notificationEmails ||
         user.notificationEmails.length === 0
       ) {
+        const reason = !user.emailNotificationsEnabled 
+          ? "Email notifications disabled"
+          : !user.notificationEmails || user.notificationEmails.length === 0
+          ? "No notification emails configured"
+          : "Unknown reason";
+        
         console.log(
-          `Skipping: emailNotificationsEnabled=${
+          `⚠️ Skipping: emailNotificationsEnabled=${
             user.emailNotificationsEnabled
-          }, notificationEmails=${user.notificationEmails?.length || 0}`
+          }, notificationEmails=${JSON.stringify(user.notificationEmails)}, count=${user.notificationEmails?.length || 0}`
         );
+        console.log(`Reason: ${reason}`);
+        
+        results.push({
+          userId: user.id,
+          anniversaryId: anniversary.id,
+          status: "skipped",
+          reason: reason,
+        });
         continue;
       }
 
-      console.log(`Sending email to: ${user.notificationEmails.join(", ")}`);
+      console.log(`✉️ Attempting to send email to: ${user.notificationEmails.join(", ")}`);
 
       try {
         // メール送信（複数の宛先に送信）
