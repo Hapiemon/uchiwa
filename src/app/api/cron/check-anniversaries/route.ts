@@ -22,6 +22,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Use JST (Asia/Tokyo) for date calculation
+    const today = new Date();
     const formatter = new Intl.DateTimeFormat('ja-JP', {
       timeZone: 'Asia/Tokyo',
       year: 'numeric',
