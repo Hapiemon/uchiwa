@@ -26,21 +26,31 @@ export async function GET(request: NextRequest) {
     const currentMonth = today.getMonth() + 1;
     const currentDay = today.getDate();
 
-    // 今日の記念日を全て取得（全ユーザー共有）
+    console.log(`[DEBUG] Server current date: ${today.toISOString()}`);
+    console.log(`[DEBUG] Checking for year: ${currentYear}, month: ${currentMonth}, day: ${currentDay}`);
+
+    // 記念日は月日のみで比較（年は無視）
     const anniversariesToday = await prisma.anniversary.findMany({
-      where: {
-        date: {
-          gte: new Date(currentYear, currentMonth - 1, currentDay, 0, 0, 0),
-          lt: new Date(
-            currentYear,
-            currentMonth - 1,
-            currentDay + 1,
-            0,
-            0,
-            0
-          ),
-        },
+      select: {
+        id: true,
+        title: true,
+        date: true,
+        notes: true,
       },
+    });
+
+    console.log(`[DEBUG] Total anniversaries in DB: ${anniversariesToday.length}`);
+
+    // 月日が一致する記念日をフィルター
+    const filteredAnniversaries = anniversariesToday.filter((ann) => {
+      const annDate = new Date(ann.date);
+      const annMonth = annDate.getMonth() + 1;
+      const annDay = annDate.getDate();
+      
+      const isMatch = annMonth === currentMonth && annDay === currentDay;
+      console.log(`[DEBUG] Anniversary: ${ann.title}, DB date: ${ann.date}, Match: ${isMatch} (month: ${annMonth}/${currentMonth}, day: ${annDay}/${currentDay})`);
+      
+      return isMatch;
     });
 
     // メール通知を有効にしている全ユーザーを取得
@@ -61,13 +71,11 @@ export async function GET(request: NextRequest) {
 
     const results = [];
 
-    console.log(`Found ${anniversariesToday.length} anniversaries today`);
+    console.log(`Found ${filteredAnniversaries.length} anniversaries today`);
     console.log(`Found ${usersWithNotifications.length} users with notifications enabled`);
-    console.log(`Checking at date: ${today.toISOString()}`);
-    console.log(`Current timezone info: Year=${currentYear}, Month=${currentMonth}, Day=${currentDay}`);
 
     // 記念日がない場合は終了
-    if (anniversariesToday.length === 0) {
+    if (filteredAnniversaries.length === 0) {
       return NextResponse.json({
         success: true,
         date: today.toISOString(),
@@ -84,7 +92,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({
         success: true,
         date: today.toISOString(),
-        checked: anniversariesToday.length,
+        checked: filteredAnniversaries.length,
         sent: 0,
         failed: 0,
         results: [],
@@ -98,7 +106,7 @@ export async function GET(request: NextRequest) {
       console.log(`User emails: ${user.notificationEmails.join(", ")}`);
 
       // 記念日リストを生成
-      const anniversaryList = anniversariesToday
+      const anniversaryList = filteredAnniversaries
         .map(
           (ann) => `
         <li style="margin-bottom: 15px;">
@@ -170,7 +178,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({
       success: true,
       date: today.toISOString(),
-      anniversariesFound: anniversariesToday.length,
+      anniversariesFound: filteredAnniversaries.length,
       usersNotified: usersWithNotifications.length,
       sent: results.filter((r) => r.status === "sent").length,
       failed: results.filter((r) => r.status === "error").length,
