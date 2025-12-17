@@ -4,6 +4,7 @@ import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useToast } from "@/components/Toast";
+import { Users } from "lucide-react";
 
 export default function ProfilePage() {
   const { data: session } = useSession();
@@ -82,9 +83,17 @@ export default function ProfilePage() {
 
           <Link
             href="/profile/edit"
-            className="inline-block w-full text-center bg-gradient-to-r from-pastel-pink to-pastel-purple text-white font-semibold py-2 rounded-lg hover:opacity-90 transition"
+            className="inline-block w-full text-center bg-gradient-to-r from-pastel-pink to-pastel-purple text-white font-semibold py-2 rounded-lg hover:opacity-90 transition mb-3"
           >
             編集
+          </Link>
+
+          <Link
+            href="/users"
+            className="inline-flex items-center justify-center gap-2 w-full bg-gray-100 text-gray-800 font-semibold py-2 rounded-lg hover:bg-gray-200 transition"
+          >
+            <Users className="w-4 h-4" />
+            <span>他のユーザを見る</span>
           </Link>
         </div>
       )}
