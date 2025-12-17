@@ -129,13 +129,13 @@ export async function GET(request: NextRequest) {
         const { data, error } = await resend.emails.send({
           from: FROM_EMAIL,
           to: user.notificationEmails,
-          subject: `🎉 今日は記念日です！（${anniversariesToday.length}件）`,
+          subject: `🎉 今日は記念日です！（${filteredAnniversaries.length}件）`,
           html: `
             <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
               <h1 style="color: #ec4899;">🎉 記念日のお知らせ</h1>
               <p>こんにちは、${user.name}さん</p>
               <p style="font-size: 18px; font-weight: bold; color: #ec4899; margin-top: 20px;">
-                今日は${anniversariesToday.length}件の記念日です！
+                今日は${filteredAnniversaries.length}件の記念日です！
               </p>
               <ul style="list-style: none; padding: 0; margin: 20px 0;">
                 ${anniversaryList}
