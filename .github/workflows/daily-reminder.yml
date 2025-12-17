@@ -1,0 +1,17 @@
+name: Daily Anniversary Reminder
+
+on:
+  schedule:
+    # 毎日午前9時（JST = UTC+9、つまりUTC 0時）に実行
+    - cron: '0 0 * * *'
+  workflow_dispatch: # 手動実行も可能にする
+
+jobs:
+  check-anniversaries:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send Anniversary Notifications
+        run: |
+          curl -X GET \
+            -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
+            ${{ secrets.APP_URL }}/api/cron/check-anniversaries

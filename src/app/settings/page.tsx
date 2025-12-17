@@ -43,13 +43,18 @@ export default function SettingsPage() {
   const { data: session } = useSession();
   const { show: showToast } = useToast();
   const [activeTab, setActiveTab] = useState<
-    "users" | "diary" | "anniversaries" | "memories"
+    "users" | "diary" | "anniversaries" | "memories" | "notifications"
   >("users");
   const [users, setUsers] = useState<User[]>([]);
   const [diaries, setDiaries] = useState<DiaryEntry[]>([]);
   const [anniversaries, setAnniversaries] = useState<Anniversary[]>([]);
   const [memories, setMemories] = useState<MemoryLink[]>([]);
   const [loading, setLoading] = useState(false);
+
+  // メール通知設定
+  const [notificationEmails, setNotificationEmails] = useState<string[]>([]);
+  const [emailNotificationsEnabled, setEmailNotificationsEnabled] = useState(false);
+  const [savingNotifications, setSavingNotifications] = useState(false);
 
   // モーダル制御
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -59,12 +64,13 @@ export default function SettingsPage() {
   const fetchData = async () => {
     setLoading(true);
     try {
-      const [usersRes, diariesRes, anniversariesRes, memoriesRes] =
+      const [usersRes, diariesRes, anniversariesRes, memoriesRes, notificationsRes] =
         await Promise.all([
           fetch("/api/settings/users"),
           fetch("/api/diary?take=100"),
           fetch("/api/anniversaries"),
           fetch("/api/memories"),
+          fetch("/api/settings/notification-email"),
         ]);
 
       if (usersRes.ok) {
@@ -82,6 +88,11 @@ export default function SettingsPage() {
       if (memoriesRes.ok) {
         const data = await memoriesRes.json();
         setMemories(data.memories || []);
+      }
+      if (notificationsRes.ok) {
+        const data = await notificationsRes.json();
+        setNotificationEmails(data.notificationEmails || []);
+        setEmailNotificationsEnabled(data.emailNotificationsEnabled || false);
       }
     } catch (error) {
       showToast("データの取得に失敗しました", "error");
@@ -196,6 +207,30 @@ export default function SettingsPage() {
     }
   };
 
+  const handleSaveNotifications = async () => {
+    setSavingNotifications(true);
+    try {
+      const response = await fetch("/api/settings/notification-email", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          notificationEmails: notificationEmails,
+          emailNotificationsEnabled,
+        }),
+      });
+
+      if (response.ok) {
+        showToast("メール通知設定を保存しました", "success");
+      } else {
+        throw new Error("Failed to save");
+      }
+    } catch (error) {
+      showToast("保存に失敗しました", "error");
+    } finally {
+      setSavingNotifications(false);
+    }
+  };
+
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
       <div className="flex items-center justify-between mb-6">
@@ -229,6 +264,11 @@ export default function SettingsPage() {
             key: "memories" as const,
             label: "メモリー",
             count: memories.length,
+          },
+          {
+            key: "notifications" as const,
+            label: "メール通知",
+            count: undefined,
           },
         ].map((tab) => (
           <button
@@ -509,6 +549,159 @@ export default function SettingsPage() {
                 ))}
               </tbody>
             </table>
+          </div>
+        )}
+
+        {activeTab === "notifications" && (
+          <div className="max-w-2xl">
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+              <h2 className="text-xl font-bold mb-4 text-gray-800">
+                📧 メール通知設定
+              </h2>
+              <p className="text-sm text-gray-600 mb-6">
+                記念日の通知をメールで受け取ることができます。毎日午前9時（日本時間）に記念日をチェックします。
+              </p>
+
+              <div className="space-y-6">
+                {/* 通知ON/OFF */}
+                <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                  <div>
+                    <label className="text-sm font-medium text-gray-700">
+                      メール通知を有効にする
+                    </label>
+                    <p className="text-xs text-gray-500 mt-1">
+                      記念日が近づいたらメールでお知らせします
+                    </p>
+                  </div>
+                  <button
+                    onClick={() =>
+                      setEmailNotificationsEnabled(!emailNotificationsEnabled)
+                    }
+                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                      emailNotificationsEnabled
+                        ? "bg-pastel-pink"
+                        : "bg-gray-300"
+                    }`}
+                  >
+                    <span
+                      className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                        emailNotificationsEnabled
+                          ? "translate-x-6"
+                          : "translate-x-1"
+                      }`}
+                    />
+                  </button>
+                </div>
+
+                {/* 通知先ユーザー表 */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-3">
+                    通知先ユーザー
+                  </label>
+                  <div className="border border-gray-200 rounded-lg overflow-hidden">
+                    <table className="w-full">
+                      <thead className="bg-gray-50">
+                        <tr>
+                          <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                            ユーザー名
+                          </th>
+                          <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                            メールアドレス
+                          </th>
+                          <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase">
+                            通知
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-gray-200 bg-white">
+                        {users.map((user) => {
+                          const isSelected = notificationEmails.includes(user.email);
+                          return (
+                            <tr key={user.id} className="hover:bg-gray-50">
+                              <td className="px-4 py-3 text-sm font-medium text-gray-900">
+                                {user.displayName || user.name}
+                              </td>
+                              <td className="px-4 py-3 text-sm text-gray-600">
+                                {user.email}
+                              </td>
+                              <td className="px-4 py-3 text-center">
+                                <button
+                                  onClick={() => {
+                                    if (isSelected) {
+                                      setNotificationEmails(notificationEmails.filter(e => e !== user.email));
+                                    } else {
+                                      setNotificationEmails([...notificationEmails, user.email]);
+                                    }
+                                  }}
+                                  disabled={!emailNotificationsEnabled}
+                                  className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
+                                    isSelected
+                                      ? "bg-pastel-pink"
+                                      : "bg-gray-300"
+                                  }`}
+                                >
+                                  <span
+                                    className={`inline-block h-3 w-3 transform rounded-full bg-white transition-transform ${
+                                      isSelected
+                                        ? "translate-x-5"
+                                        : "translate-x-1"
+                                    }`}
+                                  />
+                                </button>
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+                  <p className="text-xs text-gray-500 mt-2">
+                    トグルをONにしたユーザーのメールアドレスに記念日通知が送信されます
+                  </p>
+                  {notificationEmails.length > 0 && (
+                    <div className="mt-3 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                      <p className="text-sm text-blue-900 font-medium mb-2">
+                        選択中: {notificationEmails.length}人
+                      </p>
+                      <div className="flex flex-wrap gap-2">
+                        {notificationEmails.map((email) => {
+                          const user = users.find(u => u.email === email);
+                          return (
+                            <span
+                              key={email}
+                              className="inline-flex items-center gap-1 px-2 py-1 bg-white text-blue-900 rounded text-xs"
+                            >
+                              {user?.displayName || user?.name}
+                            </span>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* 保存ボタン */}
+                <button
+                  onClick={handleSaveNotifications}
+                  disabled={savingNotifications}
+                  className="w-full flex items-center justify-center gap-2 bg-pastel-pink text-white px-6 py-3 rounded-lg hover:opacity-90 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <Save className="w-4 h-4" />
+                  {savingNotifications ? "保存中..." : "設定を保存"}
+                </button>
+
+                {/* 説明 */}
+                <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                  <h3 className="text-sm font-medium text-blue-900 mb-2">
+                    💡 通知のタイミング
+                  </h3>
+                  <ul className="text-xs text-blue-800 space-y-1">
+                    <li>• 記念日当日の午前9時（日本時間）</li>
+                    <li>• 記念日が土日祝日の場合も通知されます</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
           </div>
         )}
       </div>

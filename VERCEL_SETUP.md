@@ -24,13 +24,20 @@ DATABASE_URL=postgresql://user:password@ep-xxx.neon.tech/dbname?sslmode=require
 NEXTAUTH_SECRET=ランダムな32文字以上の文字列
 NEXTAUTH_URL=https://your-app.vercel.app
 NODE_ENV=production
+RESEND_API_KEY=re_xxxxxxxxxx
+CRON_SECRET=ランダムな32文字以上の文字列
 ```
 
-**NEXTAUTH_SECRET の生成:**
+**NEXTAUTH_SECRET / CRON_SECRET の生成:**
 
 ```bash
 openssl rand -base64 32
 ```
+
+**RESEND_API_KEYの取得:**
+1. [Resend](https://resend.com/)にサインアップ
+2. Dashboard > API Keys で新しいキーを作成
+3. キーをコピーして環境変数に設定
 
 **重要:** 全ての環境（Production, Preview, Development）にチェックを入れる
 
@@ -104,6 +111,34 @@ npx prisma migrate deploy
 - ✅ サーバーレス対応
 - ✅ バックアップ自動作成
 
+## 記念日メール通知の設定
+
+### GitHub Secretsの設定
+
+GitHubリポジトリで **Settings > Secrets and variables > Actions** に移動し、以下を追加：
+
+```bash
+CRON_SECRET=<VERCEL_SETUP.mdで生成した文字列>
+APP_URL=https://your-app.vercel.app
+```
+
+### Resendのドメイン設定
+
+1. [Resend Console](https://resend.com/domains) でドメインを追加
+2. DNSレコードを設定して認証
+3. `from` メールアドレスを `notifications@your-domain.com` に変更
+
+**注意:** Resendの無料プランでは認証済みドメインからのみ送信可能です。テストには `onboarding@resend.dev` を使用できます。
+
+### 通知のテスト
+
+```bash
+# ローカルでテスト（.envにRESEND_API_KEYとCRON_SECRETを設定）
+curl -X GET \
+  -H "Authorization: Bearer your-cron-secret" \
+  http://localhost:3000/api/cron/check-anniversaries
+```
+
 ## トラブルシューティング
 
 ### SSL 接続エラー
@@ -120,6 +155,13 @@ Neon Console で「Compute」タブを確認し、データベースがアクテ
 # スキーマを強制プッシュ（開発初期のみ）
 npx prisma db push --force-reset
 ```
+
+### メール通知が届かない
+
+1. Vercel環境変数に `RESEND_API_KEY` が設定されているか確認
+2. GitHub Secretsに `CRON_SECRET` と `APP_URL` が設定されているか確認
+3. `/settings` でメール通知が有効になっているか確認
+4. Resendのダッシュボードでログを確認
 
 ### 接続プールエラー
 
