@@ -114,7 +114,7 @@ export async function GET(request: NextRequest) {
               </p>
               <hr style="margin: 30px 0; border: none; border-top: 1px solid #e5e7eb;">
               <p style="font-size: 12px; color: #6b7280;">
-                このメールは https://ohayo.site から自動送信されています。
+                このメールは https://uchiwa-swart.vercel.app から自動送信されています。
               </p>
             </div>
           `,
