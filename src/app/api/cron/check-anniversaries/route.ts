@@ -10,6 +10,9 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 const CRON_SECRET =
   process.env.CRON_SECRET || "your-secret-key-change-in-production";
 
+// メール送信元アドレス（環境変数で切り替え可能）
+const FROM_EMAIL = process.env.RESEND_FROM || "onboarding@resend.dev";
+
 export async function GET(request: NextRequest) {
   try {
     // 認証チェック
@@ -109,7 +112,7 @@ export async function GET(request: NextRequest) {
       try {
         // メール送信
         const { data, error } = await resend.emails.send({
-          from: "onboarding@resend.dev", // Resend無料プラン用。本番運用時は自分のドメインに変更
+          from: FROM_EMAIL,
           to: user.notificationEmails,
           subject: `🎉 今日は記念日です！（${anniversariesToday.length}件）`,
           html: `
