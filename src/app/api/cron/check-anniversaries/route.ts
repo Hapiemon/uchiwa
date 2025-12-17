@@ -21,13 +21,19 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const today = new Date();
-    const currentYear = today.getFullYear();
-    const currentMonth = today.getMonth() + 1;
-    const currentDay = today.getDate();
+    // Use JST (Asia/Tokyo) for date calculation
+    const formatter = new Intl.DateTimeFormat('ja-JP', {
+      timeZone: 'Asia/Tokyo',
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+    });
+    const jstDateStr = formatter.format(today);
+    const [year, month, day] = jstDateStr.split('/').map(Number);
 
-    console.log(`[DEBUG] Server current date: ${today.toISOString()}`);
-    console.log(`[DEBUG] Checking for year: ${currentYear}, month: ${currentMonth}, day: ${currentDay}`);
+    console.log(`[DEBUG] Server current date (UTC): ${today.toISOString()}`);
+    console.log(`[DEBUG] JST current date: ${year}-${month}-${day}`);
+    console.log(`[DEBUG] Checking for year: ${year}, month: ${month}, day: ${day}`);
 
     // 記念日は月日のみで比較（年は無視）
     const anniversariesToday = await prisma.anniversary.findMany({
@@ -44,11 +50,11 @@ export async function GET(request: NextRequest) {
     // 月日が一致する記念日をフィルター
     const filteredAnniversaries = anniversariesToday.filter((ann) => {
       const annDate = new Date(ann.date);
-      const annMonth = annDate.getMonth() + 1;
-      const annDay = annDate.getDate();
+      const annMonth = annDate.getUTCMonth() + 1;
+      const annDay = annDate.getUTCDate();
       
-      const isMatch = annMonth === currentMonth && annDay === currentDay;
-      console.log(`[DEBUG] Anniversary: ${ann.title}, DB date: ${ann.date}, Match: ${isMatch} (month: ${annMonth}/${currentMonth}, day: ${annDay}/${currentDay})`);
+      const isMatch = annMonth === month && annDay === day;
+      console.log(`[DEBUG] Anniversary: ${ann.title}, DB date: ${ann.date}, Match: ${isMatch} (month: ${annMonth}/${month}, day: ${annDay}/${day})`);
       
       return isMatch;
     });
