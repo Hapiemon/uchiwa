@@ -49,7 +49,7 @@ export default function UsersPage() {
   }
 
   return (
-    <div className="max-w-4xl mx-auto">
+    <div className="max-w-3xl mx-auto">
       <div className="flex items-center gap-2 mb-6">
         <Users className="w-8 h-8 text-pastel-pink" />
         <h1 className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-pastel-pink to-pastel-purple">
@@ -71,47 +71,30 @@ export default function UsersPage() {
           ユーザが見つかりません
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="space-y-3">
           {users.map((user) => (
-            <Link
+            <div
               key={user.id}
-              href={`/users/${user.id}`}
-              className="block bg-white rounded-2xl shadow-md p-4 hover:shadow-lg transition hover:scale-105 transform"
+              className="bg-white rounded-2xl shadow-md p-4 hover:shadow-lg transition"
             >
-              <div className="flex items-center gap-4 mb-3">
+              <div className="flex items-start gap-3">
                 {user.avatarUrl && (
                   <img
                     src={user.avatarUrl}
                     alt={user.displayName || user.name}
-                    className="w-12 h-12 rounded-full border-2 border-pastel-pink"
+                    className="w-12 h-12 rounded-full border-2 border-pastel-pink object-cover"
                   />
                 )}
-                <div className="flex-1">
+                <div className="flex-1 min-w-0">
                   <p className="font-semibold text-lg truncate">
-                    {user.displayName || user.name}
+                    {user.displayName || "表示名未入力"}
                   </p>
-                  {user.displayName && (
-                    <p className="text-sm text-gray-600 truncate">
-                      @{user.name}
-                    </p>
-                  )}
-                </div>
-              </div>
-
-              {user.bio && (
-                <div className="bg-gray-50 rounded-lg p-3">
-                  <p className="text-sm text-gray-700 line-clamp-3 whitespace-pre-wrap">
-                    {user.bio}
+                  <p className="text-sm text-gray-600 whitespace-pre-wrap break-words mt-1">
+                    {user.bio || "自己紹介はまだありません"}
                   </p>
                 </div>
-              )}
-
-              <div className="mt-3 text-right">
-                <span className="text-sm text-pastel-pink font-semibold">
-                  詳細を見る →
-                </span>
               </div>
-            </Link>
+            </div>
           ))}
         </div>
       )}
