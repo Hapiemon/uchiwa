@@ -43,12 +43,12 @@ export function Header() {
               >
                 ログイン
               </Link>
-              <Link
+              {/* <Link
                 href="/register"
                 className="text-white hover:text-pink-100 transition"
               >
                 登録
-              </Link>
+              </Link> */}
             </>
           )}
         </div>
